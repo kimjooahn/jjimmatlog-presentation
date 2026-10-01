@@ -1,0 +1,333 @@
+{
+  "restaurant": {
+    "name": "고바우순두부쌈장 천안본점",
+    "kakaoPlaceId": "574471413",
+    "url": "https://place.map.kakao.com/574471413#review"
+  },
+  "reviews": [
+    {
+      "id": "82ddc76ed38e8565",
+      "author": "리뷰어 이름, sss",
+      "date": "2026.09.02.",
+      "rating": 5.0,
+      "text": "아… 너무 맛있어요.. 순두부랑 우렁쌈장 최고!!!",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F6ccca9cd12a7ae0cd8f10d8ae7b36fec7dc78e96%3Foriginal"
+      ],
+      "reviewer_id": "1717458545",
+      "reviewer_name": "sss",
+      "restaurant_id": "574471413",
+      "review_text": "아… 너무 맛있어요.. 순두부랑 우렁쌈장 최고!!!",
+      "review_date": "2026.09.02.",
+      "has_photo": true
+    },
+    {
+      "id": "3337d240122ea3e0",
+      "author": "리뷰어 이름, 가나디",
+      "date": "2026.08.16.",
+      "rating": 4.0,
+      "text": "수육 맛있어요. 수육이랑 우렁이쌈밥 궁합 좋습니다.\n이전에도 왔었는데 맛있어요😊\n서비스는 대신 기대하면 안됩니다. 많이 바쁜 매장이... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F6de2f46b15f1e0cf8acb1dce7036fc8a6b8127e8%3Foriginal"
+      ],
+      "reviewer_id": "3409622733",
+      "reviewer_name": "가나디",
+      "restaurant_id": "574471413",
+      "review_text": "수육 맛있어요. 수육이랑 우렁이쌈밥 궁합 좋습니다.\n이전에도 왔었는데 맛있어요😊\n서비스는 대신 기대하면 안됩니다. 많이 바쁜 매장이... 더보기",
+      "review_date": "2026.08.16.",
+      "has_photo": true
+    },
+    {
+      "id": "2b1886089477d4fc",
+      "author": "리뷰어 이름, 키티",
+      "date": "2026.08.11.",
+      "rating": 5.0,
+      "text": "주차는 협소해서 쬐끔 불편하지만 그래도 음식은 너무 너무 맛있어요! \n순두부찌개와 우렁쌈장의 가격도 너무 저렴하고\n... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Faa0fc47efe1585093011f2f5b59b59c9a3ba7105%3Foriginal"
+      ],
+      "reviewer_id": "1328615736",
+      "reviewer_name": "키티",
+      "restaurant_id": "574471413",
+      "review_text": "주차는 협소해서 쬐끔 불편하지만 그래도 음식은 너무 너무 맛있어요! \n순두부찌개와 우렁쌈장의 가격도 너무 저렴하고\n... 더보기",
+      "review_date": "2026.08.11.",
+      "has_photo": true
+    },
+    {
+      "id": "a15f3ebc63f5e39d",
+      "author": "리뷰어 이름, 옹두",
+      "date": "2026.08.09.",
+      "rating": 1.0,
+      "text": "서비스가 너무 대박이네요\n홀 알바 분이 김치 가져다주시는데 제대로 확인도 안하시고 막 가져다 놓으니 김치국물 다 흘리시고 ^^..\n입고간 바... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fb52cde631fcd4ed3abad2a8f829b9d7427b294c8%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fc0914a427d9e95d26ebffb9a617366fb8df54af0%3Foriginal"
+      ],
+      "reviewer_id": "1245718480",
+      "reviewer_name": "옹두",
+      "restaurant_id": "574471413",
+      "review_text": "서비스가 너무 대박이네요\n홀 알바 분이 김치 가져다주시는데 제대로 확인도 안하시고 막 가져다 놓으니 김치국물 다 흘리시고 ^^..\n입고간 바... 더보기",
+      "review_date": "2026.08.09.",
+      "has_photo": true
+    },
+    {
+      "id": "ada611f3256c727c",
+      "author": "리뷰어 이름, 맛있는 게 젤 좋아",
+      "date": "2025.07.23.",
+      "rating": 5.0,
+      "text": "순두부랑 우렁쌈밥은 고바우가 최고야. \n삼겹살 시키면 순두부 서비스로 나와요~~!",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F9489672054c5c98ee756d6797930c44cc917b6cd%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Faa6c1679fd54278628dc08e8a507e97931a22020%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F48a93564c82874759e5dd441e92c20d7c9b71c35%3Foriginal"
+      ],
+      "reviewer_id": "1627787986",
+      "reviewer_name": "맛있는 게 젤 좋아",
+      "restaurant_id": "574471413",
+      "review_text": "순두부랑 우렁쌈밥은 고바우가 최고야. \n삼겹살 시키면 순두부 서비스로 나와요~~!",
+      "review_date": "2025.07.23.",
+      "has_photo": true
+    },
+    {
+      "id": "a4acebb80eae1219",
+      "author": "리뷰어 이름, 맛집기록",
+      "date": "2025.04.08.",
+      "rating": 4.0,
+      "text": "맛으로는 견줄데가 없는데… 사장님께서 손님 배려 좀 해주시면 좋을 듯 ㅠ 안그래두 사람 많아서 시끌시끌한데 갈 때마다 소리 지르고 계심…",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fee8da71cffb189f1e60f874782b67e086ab45260%3Foriginal"
+      ],
+      "reviewer_id": "1331713993",
+      "reviewer_name": "맛집기록",
+      "restaurant_id": "574471413",
+      "review_text": "맛으로는 견줄데가 없는데… 사장님께서 손님 배려 좀 해주시면 좋을 듯 ㅠ 안그래두 사람 많아서 시끌시끌한데 갈 때마다 소리 지르고 계심…",
+      "review_date": "2025.04.08.",
+      "has_photo": true
+    },
+    {
+      "id": "fa31952976aff24f",
+      "author": "리뷰어 이름, zzlzzlzz",
+      "date": "2025.03.07.",
+      "rating": 4.0,
+      "text": "2025.3.7.금.오전10시반쯤\n삼겹살 2인에 공기밥1. 밥을 주문하면 순두부찌개가 나오는데 사진을 못찍음.\n삼겹살은 두툼한 편은 아니지만 먹을만함.\n쌈채소로 청상추랑 쑥갓을 주는데 쑥갓 ... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F0f373c44115e5b779ce2d5085fa7acfd605661a6%3Foriginal"
+      ],
+      "reviewer_id": "1538678757",
+      "reviewer_name": "zzlzzlzz",
+      "restaurant_id": "574471413",
+      "review_text": "2025.3.7.금.오전10시반쯤\n삼겹살 2인에 공기밥1. 밥을 주문하면 순두부찌개가 나오는데 사진을 못찍음.\n삼겹살은 두툼한 편은 아니지만 먹을만함.\n쌈채소로 청상추랑 쑥갓을 주는데 쑥갓 ... 더보기",
+      "review_date": "2025.03.07.",
+      "has_photo": true
+    },
+    {
+      "id": "3d42362b79de25c4",
+      "author": "리뷰어 이름, 병오년",
+      "date": "2025.09.02.",
+      "rating": 1.0,
+      "text": "친절하신?편.. 이나 좀 눈치를 보이게 하고 위생이 좋지 않습니다.\n\n컵에 이상한 거 ... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fb0313beac74c5bc20c67310012028f53c6ccfa7b%3Foriginal"
+      ],
+      "reviewer_id": "4005674525",
+      "reviewer_name": "병오년",
+      "restaurant_id": "574471413",
+      "review_text": "친절하신?편.. 이나 좀 눈치를 보이게 하고 위생이 좋지 않습니다.\n\n컵에 이상한 거 ... 더보기",
+      "review_date": "2025.09.02.",
+      "has_photo": true
+    },
+    {
+      "id": "b354ec8412264231",
+      "author": "리뷰어 이름, 미각세포",
+      "date": "2024.07.19.",
+      "rating": 3.0,
+      "text": "우렁쌈밥은 된장이 엄청 짜요.\n같이 나온 상추쌈에 싸먹으면 딱 알맛게 먹을 수 있더라구요.\n그리고 생우렁무침에 우렁도 많고 채소도 많고 새콤한게 맛있어요!\n주차장은... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F42bad39f0c081ac3c77cc3f40888149bb4bedaa7%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fc1b33a39dec009787bded830b5c28bfa14a25056%3Foriginal"
+      ],
+      "reviewer_id": "1383217548",
+      "reviewer_name": "미각세포",
+      "restaurant_id": "574471413",
+      "review_text": "우렁쌈밥은 된장이 엄청 짜요.\n같이 나온 상추쌈에 싸먹으면 딱 알맛게 먹을 수 있더라구요.\n그리고 생우렁무침에 우렁도 많고 채소도 많고 새콤한게 맛있어요!\n주차장은... 더보기",
+      "review_date": "2024.07.19.",
+      "has_photo": true
+    },
+    {
+      "id": "1627828c096e9c21",
+      "author": "리뷰어 이름, 욜킴",
+      "date": "2023.06.05.",
+      "rating": 5.0,
+      "text": "감자조림맛집 최고",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F3eae7bb34fb5d82d5399bea8c8211acfe961efa2%3Foriginal"
+      ],
+      "reviewer_id": "384708394",
+      "reviewer_name": "욜킴",
+      "restaurant_id": "574471413",
+      "review_text": "감자조림맛집 최고",
+      "review_date": "2023.06.05.",
+      "has_photo": true
+    },
+    {
+      "id": "23d59fa107cecd9c",
+      "author": "리뷰어 이름, 웅이",
+      "date": "2026.08.12.",
+      "rating": 1.0,
+      "text": "사장님이 돈을많이 버셔서 배장인가\n김그릇에 물이 가득고여있는데\n비가오니... 더보기",
+      "hasImage": false,
+      "imageUrls": [],
+      "reviewer_id": "2591923793",
+      "reviewer_name": "웅이",
+      "restaurant_id": "574471413",
+      "review_text": "사장님이 돈을많이 버셔서 배장인가\n김그릇에 물이 가득고여있는데\n비가오니... 더보기",
+      "review_date": "2026.08.12.",
+      "has_photo": false
+    },
+    {
+      "id": "07c8ed3022c96076",
+      "author": "리뷰어 이름, 오인규",
+      "date": "2026.06.15.",
+      "rating": 1.0,
+      "text": "순두부에서 벌레가 나와서,\n기분 상했는데. 젊은사... 더보기",
+      "hasImage": false,
+      "imageUrls": [],
+      "reviewer_id": "1628568368",
+      "reviewer_name": "오인규",
+      "restaurant_id": "574471413",
+      "review_text": "순두부에서 벌레가 나와서,\n기분 상했는데. 젊은사... 더보기",
+      "review_date": "2026.06.15.",
+      "has_photo": false
+    },
+    {
+      "id": "c7355edaaa936786",
+      "author": "리뷰어 이름, 웬만하면 좋은 말 한다",
+      "date": "2026.03.21.",
+      "rating": 5.0,
+      "text": "두정동 밥집 GOAT",
+      "hasImage": false,
+      "imageUrls": [],
+      "reviewer_id": "2143271437",
+      "reviewer_name": "웬만하면 좋은 말 한다",
+      "restaurant_id": "574471413",
+      "review_text": "두정동 밥집 GOAT",
+      "review_date": "2026.03.21.",
+      "has_photo": false
+    },
+    {
+      "id": "00d0466eb1a85384",
+      "author": "리뷰어 이름, 나나짱",
+      "date": "2026.01.24.",
+      "rating": 3.0,
+      "text": "맛은\n있습니다 -!",
+      "hasImage": false,
+      "imageUrls": [],
+      "reviewer_id": "1966410851",
+      "reviewer_name": "나나짱",
+      "restaurant_id": "574471413",
+      "review_text": "맛은\n있습니다 -!",
+      "review_date": "2026.01.24.",
+      "has_photo": false
+    },
+    {
+      "id": "5d7dc8cfa75aa4a9",
+      "author": "리뷰어 이름, 꾸기",
+      "date": "2026.01.18.",
+      "rating": 5.0,
+      "text": "전통의맛집\n주차만 잘해결되면 최고의 백반집 입니다.",
+      "hasImage": false,
+      "imageUrls": [],
+      "reviewer_id": "543859789",
+      "reviewer_name": "꾸기",
+      "restaurant_id": "574471413",
+      "review_text": "전통의맛집\n주차만 잘해결되면 최고의 백반집 입니다.",
+      "review_date": "2026.01.18.",
+      "has_photo": false
+    },
+    {
+      "id": "c2802f02e14046d0",
+      "author": "리뷰어 이름, 잉걸불",
+      "date": "2025.12.10.",
+      "rating": 2.0,
+      "text": "그 약간 일 잘하는 나에 취한 나선욱 말투 쓰는 알바생있어서 웃김",
+      "hasImage": false,
+      "imageUrls": [],
+      "reviewer_id": "1329351024",
+      "reviewer_name": "잉걸불",
+      "restaurant_id": "574471413",
+      "review_text": "그 약간 일 잘하는 나에 취한 나선욱 말투 쓰는 알바생있어서 웃김",
+      "review_date": "2025.12.10.",
+      "has_photo": false
+    },
+    {
+      "id": "939983f143e7b4a7",
+      "author": "리뷰어 이름, 영준",
+      "date": "2025.11.30.",
+      "rating": 1.0,
+      "text": "들어갔는데 삼겹살 굽는냄새가 미친듯이 남. \n그래도 맛있다길래 환기 안되는 상태에서 기다리고 있었고 자리가 있어서 앉으려고 했더니 기다리라면서 화를 내네? ... 더보기",
+      "hasImage": false,
+      "imageUrls": [],
+      "reviewer_id": "1065410482",
+      "reviewer_name": "영준",
+      "restaurant_id": "574471413",
+      "review_text": "들어갔는데 삼겹살 굽는냄새가 미친듯이 남. \n그래도 맛있다길래 환기 안되는 상태에서 기다리고 있었고 자리가 있어서 앉으려고 했더니 기다리라면서 화를 내네? ... 더보기",
+      "review_date": "2025.11.30.",
+      "has_photo": false
+    },
+    {
+      "id": "a7efb53b7e4de44e",
+      "author": "리뷰어 이름, 검은비",
+      "date": "2025.09.28.",
+      "rating": 1.0,
+      "text": "맛은 그럭저럭 있고 가성비도 괜찮아 밥 먹으러 몇번 간 곳인데 갈 때마다 느끼는 것이지만 너무 불친철하고 특히 안경쓴 남자가 사장인지! 손님 앞에서 대놓고 자기가 말한 테이블로 가지 않았다고 큰소리로 ... 더보기",
+      "hasImage": false,
+      "imageUrls": [],
+      "reviewer_id": "2567178895",
+      "reviewer_name": "검은비",
+      "restaurant_id": "574471413",
+      "review_text": "맛은 그럭저럭 있고 가성비도 괜찮아 밥 먹으러 몇번 간 곳인데 갈 때마다 느끼는 것이지만 너무 불친철하고 특히 안경쓴 남자가 사장인지! 손님 앞에서 대놓고 자기가 말한 테이블로 가지 않았다고 큰소리로 ... 더보기",
+      "review_date": "2025.09.28.",
+      "has_photo": false
+    },
+    {
+      "id": "cad9a87d4118e0eb",
+      "author": "리뷰어 이름, 하암",
+      "date": "2025.09.13.",
+      "rating": 4.0,
+      "text": "자극적이고 짜고 맛있어요... 그리고 시끄러워요",
+      "hasImage": false,
+      "imageUrls": [],
+      "reviewer_id": "1589014556",
+      "reviewer_name": "하암",
+      "restaurant_id": "574471413",
+      "review_text": "자극적이고 짜고 맛있어요... 그리고 시끄러워요",
+      "review_date": "2025.09.13.",
+      "has_photo": false
+    },
+    {
+      "id": "be1fd35720440dc8",
+      "author": "리뷰어 이름, 신영경",
+      "date": "2025.07.29.",
+      "rating": 1.0,
+      "text": "가족들이랑 맛있게 고기에 쌈밥이 먹고 싶어 갔는데\n짜증이 나서 겨우 먹고 왔네요...ㅜㅜ \n이 무더위에 땀흘리며 밥먹는거 최악이죠!\n더울때는 시원하게 추울때는 따... 더보기",
+      "hasImage": false,
+      "imageUrls": [],
+      "reviewer_id": "3287710950",
+      "reviewer_name": "신영경",
+      "restaurant_id": "574471413",
+      "review_text": "가족들이랑 맛있게 고기에 쌈밥이 먹고 싶어 갔는데\n짜증이 나서 겨우 먹고 왔네요...ㅜㅜ \n이 무더위에 땀흘리며 밥먹는거 최악이죠!\n더울때는 시원하게 추울때는 따... 더보기",
+      "review_date": "2025.07.29.",
+      "has_photo": false
+    }
+  ]
+}

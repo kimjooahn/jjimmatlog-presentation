@@ -1,0 +1,47 @@
+# Operating system files
+.DS_Store
+.DS_Store?
+._*
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+*.secret
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Node.js dependencies and debug logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local tooling and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build and generated output
+build/
+dist/
+*.log

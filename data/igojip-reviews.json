@@ -1,0 +1,372 @@
+{
+  "restaurant": {
+    "name": "이고집만두",
+    "kakaoPlaceId": "22319551",
+    "url": "https://place.map.kakao.com/22319551#review"
+  },
+  "reviews": [
+    {
+      "id": "3ae37a17f750918a",
+      "author": "리뷰어 이름, 딸기세개",
+      "date": "2026.09.14.",
+      "rating": 5.0,
+      "text": "맛으로 모든 단점이 사라지는 맛집입니다.\n얼큰먹었는데 약간매운 가볍고 칼칼한 깔끔한 맛입니다. \n교자만두는 심심해서 더 맛있어요.",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fa00bfe831590b95125d439c89cbd4f552b44cf78%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F287f788ec084cba366872fe8a0c7f87bbdc9bc18%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Ffa72e2f9528d38e79a38c323f6da6879b90f2f98%3Foriginal"
+      ],
+      "reviewer_id": "1198901395",
+      "reviewer_name": "딸기세개",
+      "restaurant_id": "22319551",
+      "review_text": "맛으로 모든 단점이 사라지는 맛집입니다.\n얼큰먹었는데 약간매운 가볍고 칼칼한 깔끔한 맛입니다. \n교자만두는 심심해서 더 맛있어요.",
+      "review_date": "2026.09.14.",
+      "has_photo": true
+    },
+    {
+      "id": "9e0b22162776cc81",
+      "author": "리뷰어 이름, 캬핳",
+      "date": "2026.09.12.",
+      "rating": 4.0,
+      "text": "여행와서 현지인추천으로 왔는데, 이런 만두는 처음 먹어봅니다. 지역맛집이 맞네요. 천안여행오면 들러볼만합니다!",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F9c06fca929251aef1e44807e518d75f12daaa398%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F918144d77254ff7ec6e337b807bc4cb6504c3bd8%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F162f35a88ef61b8ec1746e1eb97645696549f82b%3Foriginal"
+      ],
+      "reviewer_id": "1065716529",
+      "reviewer_name": "캬핳",
+      "restaurant_id": "22319551",
+      "review_text": "여행와서 현지인추천으로 왔는데, 이런 만두는 처음 먹어봅니다. 지역맛집이 맞네요. 천안여행오면 들러볼만합니다!",
+      "review_date": "2026.09.12.",
+      "has_photo": true
+    },
+    {
+      "id": "b87cc68385bb3a77",
+      "author": "리뷰어 이름, 키티",
+      "date": "2026.08.11.",
+      "rating": 2.0,
+      "text": "가격 적당하고 맛은 조미료맛이 너무 쎄서\n나중이 끓이다보니 국물이 엄청 짜지네요.\n다시는 안갈 것 같습니다",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fd0ae68cbc662c376260b4f7eefaf231f40e95450%3Foriginal"
+      ],
+      "reviewer_id": "1328615736",
+      "reviewer_name": "키티",
+      "restaurant_id": "22319551",
+      "review_text": "가격 적당하고 맛은 조미료맛이 너무 쎄서\n나중이 끓이다보니 국물이 엄청 짜지네요.\n다시는 안갈 것 같습니다",
+      "review_date": "2026.08.11.",
+      "has_photo": true
+    },
+    {
+      "id": "9451c9dfb23aee60",
+      "author": "리뷰어 이름, ESS",
+      "date": "2026.06.03.",
+      "rating": 4.0,
+      "text": "주차하기 쥰나 힘들지만\n맛은 있습니다",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fcf38ccc4d97947225b5f91b2ebc0a4670aba4188%3Foriginal"
+      ],
+      "reviewer_id": "1343810350",
+      "reviewer_name": "ESS",
+      "restaurant_id": "22319551",
+      "review_text": "주차하기 쥰나 힘들지만\n맛은 있습니다",
+      "review_date": "2026.06.03.",
+      "has_photo": true
+    },
+    {
+      "id": "9c169ff08430bfae",
+      "author": "리뷰어 이름, 임소리",
+      "date": "2026.05.10.",
+      "rating": 1.0,
+      "text": "주차 친절하게 도와주셔서 감사합니다.\n다만 저랑 친구랑 같이 먹었던 전골 2인분이 어떤 재료 때문인지는 모르겠지만 둘 다 배탈이 나서 저녁에 고생좀 했네요... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F7b740457d4402e3b636098369d05147ac86d7ab6%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fcb4f2aa4d04a47e312c907ea642f8b74f052ddfb%3Foriginal"
+      ],
+      "reviewer_id": "1335511812",
+      "reviewer_name": "임소리",
+      "restaurant_id": "22319551",
+      "review_text": "주차 친절하게 도와주셔서 감사합니다.\n다만 저랑 친구랑 같이 먹었던 전골 2인분이 어떤 재료 때문인지는 모르겠지만 둘 다 배탈이 나서 저녁에 고생좀 했네요... 더보기",
+      "review_date": "2026.05.10.",
+      "has_photo": true
+    },
+    {
+      "id": "64d5403016bba99c",
+      "author": "리뷰어 이름, sosoyoyo",
+      "date": "2026.04.27.",
+      "rating": 3.0,
+      "text": "밀푀유나베 스타일인데 고기가 작아도 너무 작음 국물은 굉장히 맑은 편이라 호불호 있을듯. 만두는 훌륭",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fe3b0044b8ba7c4a8a19177c92e670cf24364cbc8%3Foriginal"
+      ],
+      "reviewer_id": "770487333",
+      "reviewer_name": "sosoyoyo",
+      "restaurant_id": "22319551",
+      "review_text": "밀푀유나베 스타일인데 고기가 작아도 너무 작음 국물은 굉장히 맑은 편이라 호불호 있을듯. 만두는 훌륭",
+      "review_date": "2026.04.27.",
+      "has_photo": true
+    },
+    {
+      "id": "b12dbb101ac86cf8",
+      "author": "리뷰어 이름, 돼지다람쥐",
+      "date": "2026.02.21.",
+      "rating": 4.0,
+      "text": "담백하고 맛있다! 하지만 두시간 기다릴맛은 아님",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F99c1862cd3b6a39881b8fc55645399daa18bde86%3Foriginal"
+      ],
+      "reviewer_id": "2153604219",
+      "reviewer_name": "돼지다람쥐",
+      "restaurant_id": "22319551",
+      "review_text": "담백하고 맛있다! 하지만 두시간 기다릴맛은 아님",
+      "review_date": "2026.02.21.",
+      "has_photo": true
+    },
+    {
+      "id": "9e614014d78b6a02",
+      "author": "리뷰어 이름, Issa",
+      "date": "2026.01.08.",
+      "rating": 5.0,
+      "text": "맑은, 얼큰 둘 다 맛있고 군만두도 꼭 드세요! 맛집으로 추천하면 다들 만족한 곳 입니다",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F439300b865cd0597a15cd3b409b7d7b17e708f40%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fb4445d33766dc7d782dbe48702002ca9655e9427%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Ff999de068a4be0871d5f29d12bac3dae6484328f%3Foriginal"
+      ],
+      "reviewer_id": "1773064846",
+      "reviewer_name": "Issa",
+      "restaurant_id": "22319551",
+      "review_text": "맑은, 얼큰 둘 다 맛있고 군만두도 꼭 드세요! 맛집으로 추천하면 다들 만족한 곳 입니다",
+      "review_date": "2026.01.08.",
+      "has_photo": true
+    },
+    {
+      "id": "6e7a38ebe661f55e",
+      "author": "리뷰어 이름, 과노c슬기로운미식생활",
+      "date": "2026.01.07.",
+      "rating": 5.0,
+      "text": "-이고집만두\n-충남 천안시 동남구 유량동 8-3\n-고집 부릴만하다\n-밀푀유나베 스타일의 만두전골\n... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F18d2f0cd4bddfb82c9851869ac36585b65993f2f%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Ffe853d31fb809276009fbb31c96e02874d62a233%3Foriginal"
+      ],
+      "reviewer_id": "398807289",
+      "reviewer_name": "과노c슬기로운미식생활",
+      "restaurant_id": "22319551",
+      "review_text": "-이고집만두\n-충남 천안시 동남구 유량동 8-3\n-고집 부릴만하다\n-밀푀유나베 스타일의 만두전골\n... 더보기",
+      "review_date": "2026.01.07.",
+      "has_photo": true
+    },
+    {
+      "id": "d915fbd8b00884d1",
+      "author": "리뷰어 이름, 이단비",
+      "date": "2025.11.23.",
+      "rating": 3.0,
+      "text": "얼큰은\n역시나 맛있음 근데 고기가 거의 급식 제육짜바리보다 훨씬 얇음 등ㅊ은 혜자급일정도 예전이랑 좀 달라져서 아쉽 ㅠ",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F78ee3d8f1a61be49fa559f08882b6d8ce09a0deb%3Foriginal"
+      ],
+      "reviewer_id": "3687436943",
+      "reviewer_name": "이단비",
+      "restaurant_id": "22319551",
+      "review_text": "얼큰은\n역시나 맛있음 근데 고기가 거의 급식 제육짜바리보다 훨씬 얇음 등ㅊ은 혜자급일정도 예전이랑 좀 달라져서 아쉽 ㅠ",
+      "review_date": "2025.11.23.",
+      "has_photo": true
+    },
+    {
+      "id": "729c226d0ed9b818",
+      "author": "리뷰어 이름, 먹큼",
+      "date": "2025.09.11.",
+      "rating": 5.0,
+      "text": "솔직히 천안에서 이고집 만두 모르면 간첩이다 할 정도로 유명한데 맛있음 가끔 생각날 때 가는 집.. 근데 주차랑 웨이팅이 있는게 좀 아쉽긴 함",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Ffe8035603a3154f21e3ad26fb059ae7e54082b02%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F99abe7b4db7596d45d0408bc4d8fd52e243e11a9%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F599db0f618b986bfce6df937840b6f997e09a666%3Foriginal"
+      ],
+      "reviewer_id": "1059291650",
+      "reviewer_name": "먹큼",
+      "restaurant_id": "22319551",
+      "review_text": "솔직히 천안에서 이고집 만두 모르면 간첩이다 할 정도로 유명한데 맛있음 가끔 생각날 때 가는 집.. 근데 주차랑 웨이팅이 있는게 좀 아쉽긴 함",
+      "review_date": "2025.09.11.",
+      "has_photo": true
+    },
+    {
+      "id": "09fed4bfe7610aa3",
+      "author": "리뷰어 이름, 맛있는 게 젤 좋아",
+      "date": "2025.07.23.",
+      "rating": 5.0,
+      "text": "너무 맛있어요! 군만두 필수 ⭐️🧡\n주차장도 있고 평일은 웨이팅 없이 먹을 수 있었어요!\n한 가지 단점은 방에서 먹었는데 ... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fa792efb685d31d048f87cb97728df1cd56c6c113%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fa800b35dc690176cd7f20023d144cd66bbcb619f%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F5ad62726ae556bbbba6489a1a151f016a95d1ecb%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F20be412c94a44ac50846597622caefba8941e6ec%3Foriginal"
+      ],
+      "reviewer_id": "1627787986",
+      "reviewer_name": "맛있는 게 젤 좋아",
+      "restaurant_id": "22319551",
+      "review_text": "너무 맛있어요! 군만두 필수 ⭐️🧡\n주차장도 있고 평일은 웨이팅 없이 먹을 수 있었어요!\n한 가지 단점은 방에서 먹었는데 ... 더보기",
+      "review_date": "2025.07.23.",
+      "has_photo": true
+    },
+    {
+      "id": "cb1cd17c2a963bba",
+      "author": "리뷰어 이름, DDogani",
+      "date": "2025.06.24.",
+      "rating": 4.0,
+      "text": "만두 속이 꽉차고 알참… 전골은 갈수록 점점 짜긴 함",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F8918bca4b3325419146a7d8649598a9f5abb391d%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F8736cf475bd128ea72acf01d594ccaf4b5653e77%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Ff073290afb51ab7f4a1bdd7cf45a3d2db23cfcf2%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F876cd4e26c5ea6c9c6e9c42d3d80208a221f379a%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F403250b1d3d5cf98ca13b55189116a3889b09f3f%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fa57bcffbb6df5f9c016313320f9539a78c9c6476%3Foriginal"
+      ],
+      "reviewer_id": "1330368241",
+      "reviewer_name": "DDogani",
+      "restaurant_id": "22319551",
+      "review_text": "만두 속이 꽉차고 알참… 전골은 갈수록 점점 짜긴 함",
+      "review_date": "2025.06.24.",
+      "has_photo": true
+    },
+    {
+      "id": "210fcc42c1852595",
+      "author": "리뷰어 이름, 문희사항",
+      "date": "2025.06.15.",
+      "rating": 2.0,
+      "text": "기대했던것에 비해 평범한 맛",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F3a763319cee59e0ae31d35cf6bba94a7137bbfe5%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F4fcf4e27121c3a6ae95f6c3a40f54a4911a256a6%3Foriginal"
+      ],
+      "reviewer_id": "1468939795",
+      "reviewer_name": "문희사항",
+      "restaurant_id": "22319551",
+      "review_text": "기대했던것에 비해 평범한 맛",
+      "review_date": "2025.06.15.",
+      "has_photo": true
+    },
+    {
+      "id": "3b8c9d1363d1bb3c",
+      "author": "리뷰어 이름, 나름너그러운편",
+      "date": "2025.06.02.",
+      "rating": 5.0,
+      "text": "최고의 만두,,,,",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fb6fd6f90e1411204d0e890fd77a569755464d572%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F1efa0ec29c2d3d4943eb564e3cb3dfa8bd2f28a6%3Foriginal"
+      ],
+      "reviewer_id": "1337682865",
+      "reviewer_name": "나름너그러운편",
+      "restaurant_id": "22319551",
+      "review_text": "최고의 만두,,,,",
+      "review_date": "2025.06.02.",
+      "has_photo": true
+    },
+    {
+      "id": "fa4afdc18e55801c",
+      "author": "리뷰어 이름, ^^",
+      "date": "2025.04.01.",
+      "rating": 5.0,
+      "text": "담백하니 맛있어요\n웨이팅은 있는데 오래 기다리지 않아도 됐어요\n주차장은 가게앞도 있고 수련원... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fe1f0d8e6367ef20d8cb2a5100bdc41dedf4631a5%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fb434f2b6537026b4652ea1526436f57d27a52c31%3Foriginal"
+      ],
+      "reviewer_id": "2205518310",
+      "reviewer_name": "^^",
+      "restaurant_id": "22319551",
+      "review_text": "담백하니 맛있어요\n웨이팅은 있는데 오래 기다리지 않아도 됐어요\n주차장은 가게앞도 있고 수련원... 더보기",
+      "review_date": "2025.04.01.",
+      "has_photo": true
+    },
+    {
+      "id": "38b1deaa3af18f66",
+      "author": "리뷰어 이름, 툼",
+      "date": "2025.03.18.",
+      "rating": 4.0,
+      "text": "짱맛있어용!!",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F76e62877e574770d086b4c52b09c7708d22a5dfa%3Foriginal"
+      ],
+      "reviewer_id": "1552323331",
+      "reviewer_name": "툼",
+      "restaurant_id": "22319551",
+      "review_text": "짱맛있어용!!",
+      "review_date": "2025.03.18.",
+      "has_photo": true
+    },
+    {
+      "id": "ae84389a20b5d9ee",
+      "author": "리뷰어 이름, 예민한미뢰",
+      "date": "2025.01.29.",
+      "rating": 4.0,
+      "text": "밀푀유나베 스타일의 만둣국\n한국 정통 만둣국 스타일은 아니지만 깔끔한 편이고요.\n\n굴림만두가 퍽퍽하... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F0cd2d25ac8068999ae765ca8a9acb71657cb8116%3Foriginal"
+      ],
+      "reviewer_id": "1146819169",
+      "reviewer_name": "예민한미뢰",
+      "restaurant_id": "22319551",
+      "review_text": "밀푀유나베 스타일의 만둣국\n한국 정통 만둣국 스타일은 아니지만 깔끔한 편이고요.\n\n굴림만두가 퍽퍽하... 더보기",
+      "review_date": "2025.01.29.",
+      "has_photo": true
+    },
+    {
+      "id": "4e75c6f822563067",
+      "author": "리뷰어 이름, 임ss",
+      "date": "2024.12.18.",
+      "rating": 4.0,
+      "text": "만두전골이 왜이리 비싸?라고 생각했지만\n소고기를 보고 납득했습니다.\n주차요원분들이 계시지만, 주차장은 손님수에 비해 적어보입... 더보기",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2Fed99ca835648b60b28721869928248d68722fd3e%3Foriginal"
+      ],
+      "reviewer_id": "525952432",
+      "reviewer_name": "임ss",
+      "restaurant_id": "22319551",
+      "review_text": "만두전골이 왜이리 비싸?라고 생각했지만\n소고기를 보고 납득했습니다.\n주차요원분들이 계시지만, 주차장은 손님수에 비해 적어보입... 더보기",
+      "review_date": "2024.12.18.",
+      "has_photo": true
+    },
+    {
+      "id": "b6f8a3ee391ea09a",
+      "author": "리뷰어 이름, somewhere",
+      "date": "2024.11.20.",
+      "rating": 5.0,
+      "text": "담백하니 음식도 빨리 나오고 양도 많고 괜찮네요.\n천안 들리게 되면 한번쯤 가볼만 한거 같아요. \n마지막부분에 칼국수 먹을때 짜지긴 하는데 잘 조절해서 드시면 좋을것 같아요.",
+      "hasImage": true,
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F2edcf5addaf3516d308d49cc9c825fa9e6c2ac33%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F2de9a459aa6e9cfc15e00ac48f0aea64c36a3518%3Foriginal",
+        "https://img1.kakaocdn.net/cthumb/local/C280x280.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F5c526da4492f96cb14c5177e46935637c73b96a6%3Foriginal"
+      ],
+      "reviewer_id": "2292460470",
+      "reviewer_name": "somewhere",
+      "restaurant_id": "22319551",
+      "review_text": "담백하니 음식도 빨리 나오고 양도 많고 괜찮네요.\n천안 들리게 되면 한번쯤 가볼만 한거 같아요. \n마지막부분에 칼국수 먹을때 짜지긴 하는데 잘 조절해서 드시면 좋을것 같아요.",
+      "review_date": "2024.11.20.",
+      "has_photo": true
+    }
+  ]
+}

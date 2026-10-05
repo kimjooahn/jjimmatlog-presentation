@@ -85,7 +85,30 @@ def parse_rating(values: list[str]) -> float:
     return 0
 
 
-def write_result(reviews: list[dict], place_name: str, place_id: str, place_url: str, output_path: Path) -> None:
+def parse_kakao_restaurant_rating(value: str) -> float:
+    try:
+        rating = float(value.strip())
+    except ValueError as error:
+        raise ValueError(f"카카오맵 식당 평점을 숫자로 읽을 수 없습니다: {value!r}") from error
+    if not 0 < rating <= 5:
+        raise ValueError(f"카카오맵 식당 평점이 범위를 벗어났습니다: {value!r}")
+    return rating
+
+
+async def extract_kakao_restaurant_rating(page) -> float:
+    rating_element = page.locator(".link_info .starred_grade .num_star").first
+    await rating_element.wait_for(state="visible", timeout=15_000)
+    return parse_kakao_restaurant_rating(await rating_element.inner_text())
+
+
+def write_result(
+    reviews: list[dict],
+    place_name: str,
+    place_id: str,
+    place_url: str,
+    output_path: Path,
+    kakao_rating: float,
+) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     for review in reviews:
         normalize_review(review, place_id)
@@ -94,6 +117,7 @@ def write_result(reviews: list[dict], place_name: str, place_id: str, place_url:
             "name": place_name,
             "kakaoPlaceId": place_id,
             "url": place_url,
+            "kakaoRating": kakao_rating,
         },
         "reviews": reviews[:MAX_REVIEWS],
     }
@@ -263,7 +287,7 @@ async def backfill_existing_reviewer_ids(data_directory: Path) -> None:
             print(f"건너뜀: {path.name}에 식당 URL 또는 ID가 없습니다.", flush=True)
             continue
         try:
-            current_reviews = await collect(place_url)
+            current_reviews, kakao_rating = await collect(place_url)
         except Exception as error:
             print(f"수집 실패: {path.name}: {error}", flush=True)
             continue
@@ -272,11 +296,12 @@ async def backfill_existing_reviewer_ids(data_directory: Path) -> None:
         for review in reviews:
             normalize_review(review, place_id)
         payload["reviews"] = reviews
+        restaurant["kakaoRating"] = kakao_rating
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"{path.name}: 기존 리뷰 {len(reviews)}개 중 {matched}개 reviewer_id 복원", flush=True)
 
 
-async def collect(place_url: str) -> list[dict]:
+async def collect(place_url: str) -> tuple[list[dict], float]:
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
         page = await browser.new_page(locale="ko-KR", viewport={"width": 1440, "height": 1000})
@@ -284,6 +309,7 @@ async def collect(place_url: str) -> list[dict]:
             print("리뷰 수집 시작", flush=True)
             await page.goto(place_url, wait_until="domcontentloaded", timeout=45_000)
             await page.wait_for_load_state("networkidle", timeout=30_000)
+            kakao_rating = await extract_kakao_restaurant_rating(page)
             await click_review_tab(page)
             try:
                 await page.locator(REVIEW_SELECTOR).first.wait_for(state="visible", timeout=15_000)
@@ -292,7 +318,7 @@ async def collect(place_url: str) -> list[dict]:
                 if any(word in body_text for word in ("CAPTCHA", "접근이 제한", "로그인")):
                     raise RuntimeError("카카오맵 접근 제한 또는 로그인 화면이 감지되어 수집을 중단했습니다.") from error
                 raise RuntimeError("실제 리뷰 DOM을 찾지 못했습니다. 페이지 구조가 변경되었을 수 있습니다.") from error
-            return await extract_reviews(page, place_url)
+            return await extract_reviews(page, place_url), kakao_rating
         finally:
             await browser.close()
 
@@ -326,14 +352,14 @@ def main() -> None:
     place_id = args.url.split("/place.map.kakao.com/")[-1].split("#", 1)[0].strip("/")
     output_path = data_directory / args.output
     try:
-        reviews = asyncio.run(collect(args.url))
+        reviews, kakao_rating = asyncio.run(collect(args.url))
     except Exception as error:
         print(f"수집 중단: {error}", flush=True)
         raise SystemExit(1) from error
     if output_path.exists():
         previous_payload = json.loads(output_path.read_text(encoding="utf-8"))
         merge_reviewer_ids(reviews, previous_payload.get("reviews", []))
-    write_result(reviews, args.name, place_id, args.url, output_path)
+    write_result(reviews, args.name, place_id, args.url, output_path, kakao_rating)
     print(f"수집 완료: {len(reviews)}개", flush=True)
     print(f"저장 위치: {output_path}", flush=True)
 

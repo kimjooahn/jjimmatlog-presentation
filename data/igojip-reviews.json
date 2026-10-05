@@ -2,7 +2,8 @@
   "restaurant": {
     "name": "이고집만두",
     "kakaoPlaceId": "22319551",
-    "url": "https://place.map.kakao.com/22319551#review"
+    "url": "https://place.map.kakao.com/22319551#review",
+    "kakaoRating": 4.0
   },
   "reviews": [
     {

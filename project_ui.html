@@ -1,0 +1,4276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>찐맛로그 - 맛집 & 메뉴 탐색</title>
+    <!-- 구글 폰트 & 아이콘 라이브러리 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #ff5a2b;
+            --primary-light: #fff5f2;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-muted: #888888;
+            --border-color: #eeeeee;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        /* 1. 상단 헤더 & 서비스 이름 & 검색 & 핵심 필터 */
+        header {
+            background-color: var(--card-bg);
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .search-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 8px 12px;
+            gap: 8px;
+        }
+
+        .search-wrap input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.8rem;
+            width: 100%;
+            color: var(--text-color);
+        }
+
+        .search-wrap i {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .notif-bell-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .notif-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            border-radius: 8px;
+            background-color: #e03131;
+            color: white;
+            font-size: 0.62rem;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .notif-bell-wrap i.fa-bell {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            flex-shrink: 0;
+        }
+
+        main {
+            flex: 1;
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+
+        .view { display: none; }
+        .view.active { display: block; }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-sublabel {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        /* 2. 음식 카테고리 (배민 스타일 그리드) */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .category-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .category-btn:active {
+            transform: scale(0.95);
+        }
+
+        .category-btn i {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .category-btn span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .category-btn.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .category-btn.active i,
+        .category-btn.active span {
+            color: white;
+        }
+
+        /* 카테고리 더보기 버튼: 박스 가로 폭 전체 / 카테고리 버튼 절반 높이 / 가로로 긴 형태 */
+        .more-category-btn {
+            width: 100%;
+            height: 38px;
+            margin-top: 12px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .more-category-btn i {
+            font-size: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+
+        .more-category-btn.open i {
+            transform: rotate(180deg);
+        }
+
+        .extra-categories {
+            margin-top: 12px;
+        }
+
+        #categorySection {
+            margin-bottom: 24px;
+        }
+
+        /* 3. 추천메뉴 룰렛 영역 */
+        .roulette-card {
+            background: linear-gradient(135deg, #fff5f2 0%, #ffffff 100%);
+            border: 2px solid #ffe3d9;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(255, 90, 43, 0.08);
+        }
+
+        .roulette-display {
+            height: 60px;
+            background-color: var(--card-bg);
+            border: 2px dashed var(--primary-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 16px 0;
+            overflow: hidden;
+        }
+
+        .spinning {
+            animation: spinText 0.1s infinite linear;
+        }
+
+        @keyframes spinText {
+            0% { transform: translateY(-20px); opacity: 0.3; }
+            50% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(20px); opacity: 0.3; }
+        }
+
+        .btn-lever {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 90, 43, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 4. 도시 선택 및 추천 식당 목록 */
+        .region-section {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .city-btn-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .city-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .city-btn:active {
+            transform: scale(0.95);
+        }
+
+        .city-btn i {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+
+        .city-btn span {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .city-btn.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .city-btn.active i,
+        .city-btn.active span {
+            color: white;
+        }
+
+        .restaurant-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .restaurant-item:last-child {
+            border-bottom: none;
+        }
+
+        .res-info .res-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .res-info .res-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .res-badge {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .empty-state {
+            padding: 24px 0;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .review-score-comparison {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin: 0 0 14px;
+        }
+
+        .review-score-card {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--card-bg);
+        }
+
+        .review-score-card.kakao {
+            background: #fffaf0;
+            border-color: #f2dfb2;
+        }
+
+        .review-score-card.jjinmatlog {
+            background: var(--primary-light);
+            border-color: #ffd2c4;
+        }
+
+        .review-score-label {
+            display: block;
+            margin-bottom: 3px;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+
+        .review-score-value {
+            display: block;
+            color: var(--primary-color);
+            font-size: 1.08rem;
+            font-weight: 800;
+        }
+
+        /* 커뮤니티 화면 */
+        .community-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feed-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px;
+            cursor: pointer;
+        }
+
+        .feed-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .feed-card-author {
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .feed-card-store {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .feed-card-rating {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .feed-card-text {
+            font-size: 0.83rem;
+            color: #444;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .feed-card-photo {
+            width: 100%;
+            height: 120px;
+            background-color: #f1f3f5;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c2c8cf;
+            font-size: 1.4rem;
+        }
+
+        /* 커뮤니티 - 글 종류 필터 / 뱃지 / 새 글 작성 버튼 */
+        .community-type-filter {
+            flex-shrink: 0;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: #666;
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .community-type-filter.active {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .community-type-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+
+        .community-post-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 6px 0;
+        }
+
+        .community-post-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .community-compose-fab {
+            position: fixed;
+            right: max(20px, calc((100% - 480px) / 2 + 20px));
+            bottom: 86px;
+            width: 52px;
+            height: 52px;
+            border: none;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(255, 90, 43, 0.35);
+            cursor: pointer;
+            z-index: 50;
+        }
+
+        /* 마이페이지 화면 */
+        .mypage-locked {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .lock-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background-color: #f1f3f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.6rem;
+            color: #c2c8cf;
+        }
+
+        .lock-text {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .lock-sub {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn-outline {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .profile-card {
+            background-color: var(--card-bg);
+            border-radius: 18px;
+            padding: 22px 18px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .settings-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background-color: var(--bg-color);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-right: 32px;
+        }
+
+        .profile-photo {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background-color: #f1f3f5;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.9rem;
+            color: #c2c8cf;
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            padding-top: 2px;
+        }
+
+        .profile-nickname {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .profile-stats {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .badge-section {
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+
+        .badge-row {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+        }
+
+        .badge-item {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            min-width: 68px;
+        }
+
+        .badge-circle {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            border: 2px solid #ffe3d9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .badge-item:active .badge-circle {
+            transform: scale(0.95);
+        }
+
+        .badge-item span {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .review-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        /* 가게 상세 모달 (배민 스타일) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 480px;
+            height: 80vh;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .review-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            border: 2px solid transparent;
+        }
+
+        .review-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .review-item.highlighted {
+            border-color: var(--primary-color);
+            background: var(--primary-light);
+        }
+
+        .review-photo-grid {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin-top: 8px;
+        }
+
+        .review-item .review-photo {
+            width: 88px;
+            height: 88px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex: 0 0 auto;
+            cursor: zoom-in;
+        }
+
+        .review-expand-btn {
+            display: inline-block;
+            margin: 0 0 6px;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: var(--primary-color);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .review-like-count {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .review-like-count i {
+            color: var(--primary-color);
+        }
+
+        /* 가게 상세 - 찜하기 버튼 */
+        #modalSaveBtn {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+        }
+
+        #modalSaveBtn.saved {
+            color: var(--primary-color);
+        }
+
+        /* 하단 탭 바 */
+        nav.bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            gap: 2px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        /* 로고 / 알림 클릭 가능 표시 */
+        .logo, header .fa-bell {
+            cursor: pointer;
+        }
+
+        /* 선호/비선호 추천 태그 */
+        .pref-tag {
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 8px;
+            margin-left: 6px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        .pref-tag.pref-like {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .pref-tag.pref-dislike {
+            background-color: #f1f3f5;
+            color: var(--text-muted);
+        }
+
+        /* 알레르기 안내 */
+        .allergy-warning {
+            background-color: #fff5f5;
+            border: 1px solid #ffc9c9;
+            color: #c92a2a;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.4;
+        }
+
+        .allergen-info {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        /* 로그인 / 회원가입 / 설정 등 공용 모달 폼 스타일 */
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            outline: none;
+            color: var(--text-color);
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .form-error {
+            color: #e03131;
+            font-size: 0.78rem;
+            margin-bottom: 8px;
+            min-height: 1em;
+        }
+
+        .modal-switch-text {
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 14px;
+        }
+
+        .modal-switch-text span {
+            color: var(--primary-color);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .demo-hint {
+            text-align: center;
+            font-size: 0.72rem;
+            color: #bbb;
+            margin-top: 8px;
+        }
+
+        /* 회원가입 단계 */
+        .step-indicator {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .signup-step {
+            display: none;
+        }
+
+        .signup-step.active {
+            display: block;
+        }
+
+        .step-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            line-height: 1.4;
+        }
+
+        .step-btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 18px;
+        }
+
+        .step-btn-row .btn-outline,
+        .step-btn-row .btn-lever {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .term-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            padding: 10px 0;
+        }
+
+        .term-row.all-agree {
+            font-size: 0.92rem;
+        }
+
+        .term-detail {
+            font-size: 0.85rem;
+            padding: 6px 0;
+        }
+
+        .term-detail summary {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .term-detail summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .term-detail p {
+            margin-top: 8px;
+            padding: 10px;
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            font-size: 0.76rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* 알레르기 / 선호 장르 칩 선택 */
+        .chip-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip-option {
+            padding: 7px 14px;
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .chip-option.selected {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .chip-option.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* 환경설정 */
+        .settings-section {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-section:last-of-type {
+            border-bottom: none;
+        }
+
+        /* 친한 친구 관리 - 프로필 사진 포함 카드 (친구끼리 박스로 경계 구분) */
+        .friend-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+
+        .friend-card-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            min-width: 0;
+        }
+
+        .friend-card-photo {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #f1f3f5;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #c2c8cf;
+            flex-shrink: 0;
+        }
+
+        .friend-card-info {
+            min-width: 0;
+        }
+
+        .friend-card-name {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .friend-card-remove {
+            flex-shrink: 0;
+            background: none;
+            border: 1px solid #ffc9c9;
+            color: #e03131;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 7px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* 팔로워/팔로잉 목록 - 친한 친구 관리와 동일한 카드 스타일에 붙는 팔로우 버튼 */
+        .friend-card-follow-btn {
+            flex-shrink: 0;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .friend-card-follow-btn.following {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .friend-card-me-tag {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* 인증마크 상세 */
+        .badge-detail-icon {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            border: 2px solid #ffe3d9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            margin: 0 auto 14px;
+        }
+
+        .badge-detail-name {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .badge-detail-desc {
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .badge-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        /* 알림 */
+        .notif-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .notif-item:last-child {
+            border-bottom: none;
+        }
+
+        .notif-item .notif-time {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* 헤더 - 로그인 전 알림 자리에 뜨는 회원가입/로그인 버튼 */
+        .header-auth-btn {
+            flex-shrink: 0;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 7px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* 마이페이지 - 로그인 전 안내 박스 (프로필 카드와 비슷한 크기) */
+        .login-prompt-row {
+            background-color: var(--card-bg);
+            border-radius: 18px;
+            padding: 52px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .login-prompt-row i {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* 로그인 화면 하단 링크 (회원가입 / 아이디찾기 / 비밀번호찾기) */
+        .login-links {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .login-links span {
+            cursor: pointer;
+        }
+
+        .login-links span:hover {
+            color: var(--primary-color);
+        }
+
+        .login-links .divider {
+            color: var(--border-color);
+            cursor: default;
+        }
+
+        /* 회원가입 - 아이디/닉네임 중복확인, 이메일 인증 입력줄 */
+        .input-with-btn {
+            display: flex;
+            gap: 6px;
+        }
+
+        .input-with-btn input {
+            flex: 1;
+        }
+
+        .btn-check {
+            flex-shrink: 0;
+            padding: 0 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--text-color);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .field-hint {
+            font-size: 0.72rem;
+            margin-top: 6px;
+            color: var(--text-muted);
+            min-height: 1em;
+        }
+
+        .field-hint.ok {
+            color: #2f9e44;
+        }
+
+        .field-hint.error {
+            color: #e03131;
+        }
+
+        /* 환경설정 - 가로로 긴 리스트 버튼 */
+        .settings-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .settings-nav-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .settings-nav-btn i {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* 환경설정 세부 서브페이지 - 풀사이즈보다 상단이 살짝 내려온 창 (위에 여백을 둬서 새 창임을 표시) */
+        .subpage-modal {
+            z-index: 260;
+        }
+
+        .subpage-content {
+            background: white;
+            width: 100%;
+            max-width: 480px;
+            height: 92vh;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* 프로필 위에 다시 열리는 창(팔로워/팔로잉 목록, 뱃지 상세, ... 메뉴)은 한 단계 더 위로 */
+        #followListModal,
+        #badgeDetailModal,
+        #userActionModal {
+            z-index: 280;
+        }
+
+        .close-friend-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border: 1px solid #ffe3d9;
+            border-radius: 12px;
+            padding: 4px 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .close-friend-tag {
+            display: block;
+            color: var(--primary-color);
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 3px;
+        }
+
+        /* 유저 프로필 / 팔로우 관련 */
+        .clickable-name {
+            cursor: pointer;
+        }
+
+        .clickable-name:hover {
+            text-decoration: underline;
+        }
+
+        .btn-lever.following {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            box-shadow: none;
+        }
+
+        .profile-action-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .profile-follow-counts {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 14px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- 1. [서비스 이름] [검색창] [알림] -->
+        <header>
+            <div class="header-top">
+                <div class="logo" onclick="switchView('home')"><i class="fa-solid fa-utensils"></i> 찐맛로그</div>
+                <div class="search-wrap">
+                    <i class="fa-solid fa-magnifying-glass" onclick="doSearch()"></i>
+                    <input id="searchInput" type="text" placeholder="맛집, 메뉴 검색" onkeydown="if(event.key==='Enter') doSearch()">
+                </div>
+                <span class="notif-bell-wrap" id="notifBellWrap" onclick="openNotifications()" style="display:none;">
+                    <i class="fa-regular fa-bell" id="headerBell"></i>
+                    <span class="notif-badge" id="notifBadge"></span>
+                </span>
+                <button class="header-auth-btn" id="headerAuthBtn" onclick="openLogin()">회원가입/로그인</button>
+            </div>
+        </header>
+
+        <main>
+        <!-- ===================== 홈 화면 ===================== -->
+        <div class="view active" id="homeView">
+            <!-- 2. [음식 카테고리] -->
+            <div id="categorySection">
+                <div class="section-title"><i class="fa-solid fa-list"></i> 어떤 음식이 땡기시나요?</div>
+                <div class="category-grid" id="categoryGrid"></div>
+
+                <button class="more-category-btn" id="moreCategoryBtn" onclick="toggleMoreCategories()">
+                    <span id="moreCategoryLabel">더보기</span> <i class="fa-solid fa-chevron-down"></i>
+                </button>
+
+                <div class="category-grid extra-categories" id="extraCategories" style="display:none;"></div>
+            </div>
+
+            <!-- 3. [추천메뉴 룰렛] -->
+            <section class="roulette-card">
+                <div class="section-title" style="justify-content: center; margin-bottom: 4px;">
+                    🎰 메뉴 결정 장애 극복 룰렛
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-muted);">오늘 뭐 먹을지 고민될 땐 레버를 당겨보세요!</p>
+
+                <div class="roulette-display" id="rouletteResult">
+                    레버를 당겨주세요!
+                </div>
+
+                <button class="btn-lever" onclick="spinRoulette()">
+                    <i class="fa-solid fa-gamepad"></i> 룰렛 돌리기
+                </button>
+            </section>
+
+            <!-- 4. [도시별 맛집] -->
+            <section class="region-section">
+                <div class="section-title"><i class="fa-solid fa-location-dot"></i> 지역 선택</div>
+
+                <div class="city-btn-row" id="cityBtnRow"></div>
+            </section>
+        </div>
+
+        <!-- ===================== 지역 식당 목록 화면 ===================== -->
+        <div class="view" id="restaurantListView">
+            <button class="btn-outline" style="margin:0 0 12px;padding:8px 14px;" onclick="switchView('home')">
+                <i class="fa-solid fa-arrow-left"></i> 지역 다시 선택
+            </button>
+            <section class="region-section">
+                <div class="section-title" id="cityResultTitle"><i class="fa-solid fa-location-dot"></i> 지역별 검증된 찐맛집</div>
+                <div id="restaurantList"></div>
+            </section>
+        </div>
+
+        <!-- ===================== 커뮤니티 화면 ===================== -->
+        <div class="view" id="communityView">
+            <div class="section-title"><i class="fa-solid fa-users"></i> 찐맛로그 커뮤니티</div>
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px;">맛집 추천부터 메뉴 고민까지, 다른 유저들과 이야기를 나눠보세요. (둘러보기는 로그인 없이도 가능해요)</p>
+
+            <div style="display:flex; gap:8px; margin-bottom:12px;">
+                <input id="communitySearch" type="search" placeholder="게시물 검색" oninput="renderCommunityFeed()" style="flex:1; min-width:0; padding:9px 12px; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; outline:none;">
+                <select id="communitySort" onchange="renderCommunityFeed()" style="padding:9px; border:1px solid var(--border-color); border-radius:8px; background:var(--card-bg); font-size:0.8rem;">
+                    <option value="latest">최신순</option>
+                    <option value="popular">인기순</option>
+                    <option value="comments">댓글순</option>
+                </select>
+            </div>
+
+            <div id="communityTypeFilters" style="display:flex; gap:6px; overflow-x:auto; margin-bottom:16px;">
+                <button type="button" class="community-type-filter active" data-type="전체" onclick="selectCommunityType('전체', this)">전체</button>
+                <button type="button" class="community-type-filter" data-type="추천" onclick="selectCommunityType('추천', this)">추천</button>
+                <button type="button" class="community-type-filter" data-type="질문" onclick="selectCommunityType('질문', this)">질문</button>
+                <button type="button" class="community-type-filter" data-type="토론" onclick="selectCommunityType('토론', this)">토론</button>
+                <button type="button" class="community-type-filter" data-type="후기" onclick="selectCommunityType('후기', this)">후기</button>
+            </div>
+
+            <div class="community-feed" id="communityFeed"></div>
+
+            <button class="community-compose-fab" onclick="openCommunityComposer()" aria-label="새 글 작성"><i class="fa-solid fa-plus"></i></button>
+        </div>
+
+        <!-- ===================== 마이페이지 화면 ===================== -->
+        <div class="view" id="myPageView">
+            <div class="login-prompt-row" id="myPageLoginPrompt" onclick="openLogin()">
+                <i class="fa-solid fa-chevron-right"></i>
+                <span>로그인을 해주세요</span>
+            </div>
+
+            <div class="mypage-content" id="myPageContent" style="display:none;">
+                <div class="profile-card">
+                    <button class="settings-btn" onclick="openSettings()"><i class="fa-solid fa-gear"></i></button>
+                    <div class="profile-header">
+                        <div class="profile-photo"><i class="fa-solid fa-user"></i></div>
+                        <div class="profile-info">
+                            <div class="profile-nickname" id="mpNickname">찐맛로그유저</div>
+                            <div class="profile-stats">
+                                <span class="clickable-name" id="mpFollowerCount" onclick="openFollowListModal('followers')">팔로워 0</span>
+                                ·
+                                <span class="clickable-name" id="mpFollowingCount" onclick="openFollowListModal('following')">팔로잉 0</span>
+                            </div>
+                            <div class="profile-stats" id="mpPref">자주가는 카테고리: 한식, 양식 · 평균 ★4.4</div>
+                        </div>
+                    </div>
+
+                    <div class="badge-section">
+                        <div class="section-sublabel">인증마크</div>
+                        <div class="badge-row" id="badgeRow"></div>
+                    </div>
+                </div>
+
+                <div class="section-title"><i class="fa-solid fa-bookmark"></i> 찜한 맛집</div>
+                <div id="savedStoreList"></div>
+
+                <div class="section-title" style="margin-top:24px;"><i class="fa-solid fa-comment-dots"></i> 최근에 쓴 리뷰</div>
+                <div id="myReviewList"></div>
+            </div>
+        </div>
+        </main>
+
+        <!-- 가게 정보 상세 모달 -->
+        <div class="modal" id="storeModal">
+            <div class="modal-content">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                    <h2 id="modalTitle">가게 이름</h2>
+                    <div style="display:flex; align-items:center; gap:16px;">
+                        <i class="fa-regular fa-bookmark" id="modalSaveBtn" onclick="toggleSaveStore()" style="cursor:pointer;"></i>
+                        <i class="fa-solid fa-xmark" onclick="closeModal()" style="font-size: 1.5rem; cursor:pointer;"></i>
+                    </div>
+                </div>
+                <hr style="border: 0.5px solid var(--border-color); margin-bottom: 12px;">
+
+                <div style="margin-bottom: 16px;">
+                    <p style="color: var(--primary-color); font-weight: bold; font-size: 1.1rem;" id="modalRating">★ 4.3 <span style="font-size: 0.8rem; color: #666;">(광고 보정 완료)</span></p>
+                    <p style="font-size: 0.85rem; color: #555; margin-top: 4px;" id="modalAddress"><i class="fa-solid fa-map-pin"></i> 주소</p>
+                </div>
+
+                <div id="modalAllergyWarning"></div>
+
+                <h4 style="margin-bottom: 8px;">🍽️ 대표 메뉴</h4>
+                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 16px;" id="modalMenu">
+                </div>
+
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;">
+                    <h4 style="margin:0;">💬 찐 유저 리뷰</h4>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span id="modalReviewCount" style="font-size:0.78rem;color:var(--text-muted);white-space:nowrap;">리뷰 0개</span>
+                        <button class="btn-outline" id="newReviewOpenBtn" type="button" style="margin:0;padding:7px 12px;white-space:nowrap;" onclick="toggleNewReviewForm()">리뷰 작성</button>
+                    </div>
+                </div>
+
+                <div class="review-score-comparison" id="reviewScoreComparison" style="display:none;" aria-label="식당 평점 비교">
+                    <div class="review-score-card kakao">
+                        <span class="review-score-label">카카오맵 평점</span>
+                        <strong class="review-score-value" id="kakaoRatingValue"></strong>
+                    </div>
+                    <div class="review-score-card jjinmatlog">
+                        <span class="review-score-label">찐맛로그 점수</span>
+                        <strong class="review-score-value" id="jjinmatlogRatingValue"></strong>
+                    </div>
+                </div>
+
+                <section id="newReviewCompose" style="display:none;margin:0 0 14px;padding:12px 0;border-bottom:1px solid var(--border-color);">
+                    <p id="newReviewAuthor" style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;"></p>
+                    <div id="newReviewForm" style="display:none;">
+                        <div class="form-group">
+                            <label for="newReviewRating">원래 별점</label>
+                            <select id="newReviewRating" style="width:100%;padding:10px 12px;border:1px solid var(--border-color);border-radius:8px;background:white;font-size:0.9rem;">
+                                <option value="5">★★★★★ 5.0</option>
+                                <option value="4">★★★★☆ 4.0</option>
+                                <option value="3">★★★☆☆ 3.0</option>
+                                <option value="2">★★☆☆☆ 2.0</option>
+                                <option value="1">★☆☆☆☆ 1.0</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="newReviewText">리뷰 내용</label>
+                            <textarea id="newReviewText" maxlength="2000" placeholder="방문 경험을 작성해주세요" style="width:100%;min-height:100px;padding:10px 12px;border:1px solid var(--border-color);border-radius:8px;resize:vertical;font-size:0.88rem;outline:none;"></textarea>
+                        </div>
+                        <p class="form-error" id="newReviewError"></p>
+                        <button class="btn-lever" id="newReviewSubmitBtn" style="width:100%;justify-content:center;" onclick="submitNewStoreReview()">리뷰 제출</button>
+                    </div>
+                    <div id="newReviewResult" style="display:none;margin-top:12px;padding:12px;background:var(--primary-light);border-radius:8px;font-size:0.85rem;line-height:1.6;"></div>
+                </section>
+                <div id="modalReviews"></div>
+            </div>
+        </div>
+
+        <!-- 로그인 모달 -->
+        <div class="modal" id="loginModal">
+            <div class="modal-content" style="height:auto;max-height:85vh;" onkeydown="if(event.key==='Enter' || event.keyCode===13) { event.preventDefault(); doLogin(); }">
+                <div class="modal-head">
+                    <h2>로그인</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeLogin()" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <div class="form-group">
+                    <label>아이디</label>
+                    <input type="text" id="loginId" placeholder="아이디 입력">
+                </div>
+                <div class="form-group">
+                    <label>비밀번호</label>
+                    <input type="password" id="loginPassword" placeholder="비밀번호 입력">
+                </div>
+                <p class="form-error" id="loginError"></p>
+                <button class="btn-lever" style="width:100%;justify-content:center;margin-top:8px;" onclick="doLogin()">로그인</button>
+
+                <div class="login-links">
+                    <span onclick="switchToSignup()">회원가입</span>
+                    <span class="divider">|</span>
+                    <span onclick="alert('아이디 찾기 기능은 준비 중입니다.')">아이디 찾기</span>
+                    <span class="divider">|</span>
+                    <span onclick="alert('비밀번호 찾기 기능은 준비 중입니다.')">비밀번호 찾기</span>
+                </div>
+
+                <p class="demo-hint">데모 계정: jjinmatlog / demo1234</p>
+            </div>
+        </div>
+
+        <!-- 회원가입 모달 -->
+        <div class="modal" id="signupModal">
+            <div class="modal-content" style="height:auto;max-height:88vh;">
+                <div class="modal-head">
+                    <h2>회원가입</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeSignup()" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+
+                <div class="form-group">
+                    <label>아이디</label>
+                    <div class="input-with-btn">
+                        <input type="text" id="suId" placeholder="영문/숫자 4~12자" oninput="resetIdCheck()">
+                        <button class="btn-check" onclick="checkIdDuplicate()">중복확인</button>
+                    </div>
+                    <p class="field-hint" id="suIdHint"></p>
+                </div>
+
+                <div class="form-group">
+                    <label>비밀번호</label>
+                    <input type="password" id="suPassword" placeholder="6자 이상 입력">
+                </div>
+
+                <div class="form-group">
+                    <label>비밀번호 확인</label>
+                    <input type="password" id="suPassword2" placeholder="비밀번호 재입력">
+                </div>
+
+                <div class="form-group">
+                    <label>닉네임</label>
+                    <div class="input-with-btn">
+                        <input type="text" id="suNickname" placeholder="닉네임 입력" oninput="resetNicknameCheck()">
+                        <button class="btn-check" onclick="checkNicknameDuplicate()">중복확인</button>
+                    </div>
+                    <p class="field-hint" id="suNicknameHint"></p>
+                </div>
+
+                <div class="form-group">
+                    <label>이메일</label>
+                    <div class="input-with-btn">
+                        <input type="email" id="suEmail" placeholder="example@jjinlog.com" oninput="resetEmailVerify()">
+                        <button class="btn-check" onclick="sendEmailCode()">인증</button>
+                    </div>
+                    <div class="input-with-btn" id="emailCodeRow" style="display:none;margin-top:8px;">
+                        <input type="text" id="suEmailCode" placeholder="인증번호 6자리">
+                        <button class="btn-check" onclick="verifyEmailCode()">확인</button>
+                    </div>
+                    <p class="field-hint" id="suEmailHint"></p>
+                </div>
+
+                <label class="term-row">
+                    <input type="checkbox" id="agreePrivacy"> [필수] 개인정보 수집 및 이용 동의
+                </label>
+                <details class="term-detail">
+                    <summary>내용 보기</summary>
+                    <p>수집 항목: 아이디, 비밀번호, 닉네임, 이메일<br>수집 목적: 회원 식별 및 서비스 제공, 부정 이용 방지<br>보유 기간: 회원 탈퇴 시까지 보관 후 즉시 파기합니다.</p>
+                </details>
+
+                <label class="term-row">
+                    <input type="checkbox" id="agreeTos"> [필수] 찐맛로그 이용약관 동의
+                </label>
+                <details class="term-detail">
+                    <summary>내용 보기</summary>
+                    <p>1. 이용자는 허위 리뷰나 광고성 게시물을 작성할 수 없습니다.<br>2. 리뷰는 실제 방문 및 결제 인증을 원칙으로 합니다.<br>3. 타인의 권리를 침해하는 게시물은 사전 통지 없이 삭제될 수 있습니다.</p>
+                </details>
+
+                <p class="form-error" id="signupError"></p>
+                <button class="btn-lever" style="width:100%;justify-content:center;margin-top:12px;" onclick="submitSignup()">가입하기</button>
+            </div>
+        </div>
+
+        <!-- 환경설정 모달 -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <div class="modal-head">
+                    <h2>환경설정</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeSettings()" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+
+                <div class="settings-nav">
+                    <button class="settings-nav-btn" onclick="openProfileEditPage()">
+                        <span>개인정보 수정</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                    <button class="settings-nav-btn" onclick="openAllergyPage()">
+                        <span>알레르기 설정</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                    <button class="settings-nav-btn" onclick="openPreferencePage()">
+                        <span>선호/비선호 음식 설정</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                    <button class="settings-nav-btn" onclick="openReviewManagePage()">
+                        <span>리뷰 관리</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                    <button class="settings-nav-btn" onclick="openFriendPage()">
+                        <span>친한 친구 관리</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <button class="btn-outline" style="width:100%;color:#e03131;border-color:#ffc9c9;margin-top:16px;" onclick="doLogout()">로그아웃</button>
+            </div>
+        </div>
+
+        <!-- 개인정보 수정 (서브페이지: 풀사이즈보다 살짝 내려온 크기) -->
+        <div class="modal subpage-modal" id="profileEditPage">
+            <div class="subpage-content">
+                <div class="modal-head">
+                    <h2>개인정보 수정</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeSubpage('profileEditPage')" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <div class="form-group">
+                    <label>닉네임</label>
+                    <div class="input-with-btn">
+                        <input type="text" id="peNickname" oninput="resetPeNicknameCheck()">
+                        <button class="btn-check" onclick="checkPeNicknameDuplicate()">중복확인</button>
+                    </div>
+                    <p class="field-hint" id="peNicknameHint"></p>
+                </div>
+                <div class="form-group"><label>아이디</label><input type="text" id="peUsername"></div>
+                <div class="form-group"><label>새 비밀번호</label><input type="password" id="pePassword" placeholder="변경할 때만 입력"></div>
+                <div class="form-group"><label>새 비밀번호 확인</label><input type="password" id="pePassword2" placeholder="변경할 때만 입력"></div>
+                <p class="form-error" id="peError"></p>
+                <button class="btn-lever" style="width:100%;justify-content:center;" onclick="saveProfileEdit()">저장하기</button>
+            </div>
+        </div>
+
+        <!-- 알레르기 설정 (서브페이지) -->
+        <div class="modal subpage-modal" id="allergyPage">
+            <div class="subpage-content">
+                <div class="modal-head">
+                    <h2>알레르기 설정</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeSubpage('allergyPage')" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <p class="step-desc">알레르기가 있는 성분을 선택해주세요. 검색 결과와 리뷰에서 확실하게 표시해드려요.</p>
+                <div class="chip-select" id="setAllergyChips"></div>
+                <button class="btn-lever" style="width:100%;justify-content:center;margin-top:24px;" onclick="saveAllergySettings()">저장하기</button>
+            </div>
+        </div>
+
+        <!-- 선호/비선호 음식 설정 (서브페이지) -->
+        <div class="modal subpage-modal" id="preferencePage">
+            <div class="subpage-content">
+                <div class="modal-head">
+                    <h2>선호·비선호 음식 설정</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeSubpage('preferencePage')" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <div class="section-sublabel">선호 음식 장르</div>
+                <div class="chip-select" id="setLikeChips"></div>
+                <div class="section-sublabel" style="margin-top:22px;">비선호 음식 장르</div>
+                <div class="chip-select" id="setDislikeChips"></div>
+                <button class="btn-lever" style="width:100%;justify-content:center;margin-top:24px;" onclick="savePreferenceSettings()">저장하기</button>
+            </div>
+        </div>
+
+        <!-- 리뷰 관리 (서브페이지) -->
+        <div class="modal subpage-modal" id="reviewManagePage">
+            <div class="subpage-content">
+                <div class="modal-head">
+                    <h2>리뷰 관리</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeSubpage('reviewManagePage')" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <div id="manageReviewList"></div>
+            </div>
+        </div>
+
+        <!-- 친한 친구 관리 (서브페이지) -->
+        <div class="modal subpage-modal" id="friendPage">
+            <div class="subpage-content">
+                <div class="modal-head">
+                    <h2>친한 친구 관리</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeSubpage('friendPage')" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <div id="friendList"></div>
+            </div>
+        </div>
+
+        <!-- 커뮤니티 글 작성 (서브페이지) -->
+        <div class="modal subpage-modal" id="communityComposeModal">
+            <div class="subpage-content">
+                <div class="modal-head">
+                    <h2>새 글 작성</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeSubpage('communityComposeModal')" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <div class="form-group">
+                    <label>종류</label>
+                    <select id="communityPostType" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px; font-size:0.88rem;">
+                        <option value="추천">추천</option>
+                        <option value="질문">질문</option>
+                        <option value="토론">토론</option>
+                        <option value="후기">후기</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>제목</label>
+                    <input type="text" id="communityPostTitle" maxlength="50" placeholder="제목을 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label>내용</label>
+                    <textarea id="communityPostContent" maxlength="300" placeholder="맛있는 이야기를 들려주세요" style="width:100%; min-height:160px; padding:10px; border:1px solid var(--border-color); border-radius:8px; resize:vertical; font-size:0.88rem; outline:none;"></textarea>
+                </div>
+                <label for="communityPostImage" class="btn-check" style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;"><i class="fa-regular fa-image"></i> 사진 첨부</label>
+                <input id="communityPostImage" type="file" accept="image/*" style="display:none;" onchange="handleCommunityImageChange(event)">
+                <img id="communityImagePreview" alt="첨부 사진 미리보기" style="display:none; width:100%; max-height:240px; object-fit:cover; border-radius:8px; margin-top:10px;">
+                <button class="btn-lever" style="width:100%; justify-content:center; margin-top:16px;" onclick="submitCommunityPost()">게시하기</button>
+            </div>
+        </div>
+
+        <!-- 커뮤니티 게시물 상세 (서브페이지) -->
+        <div class="modal subpage-modal" id="communityDetailModal">
+            <div class="subpage-content">
+                <div class="modal-head">
+                    <h2>게시물</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeCommunityDetail()" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <div id="communityPostDetail"></div>
+            </div>
+        </div>
+
+        <!-- 인증마크 상세 모달 -->
+        <div class="modal subpage-modal" id="badgeDetailModal">
+            <div class="subpage-content">
+                <div class="modal-head">
+                    <h2>인증마크</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeBadgeDetail()" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <div class="badge-detail-icon" id="badgeDetailIcon"><i class="fa-solid fa-medal"></i></div>
+                <h3 class="badge-detail-name" id="badgeDetailName">미식가</h3>
+                <p class="badge-detail-desc" id="badgeDetailDesc"></p>
+                <div class="badge-detail-row"><span>획득 조건</span><b id="badgeDetailCondition"></b></div>
+                <div class="badge-detail-row"><span>달성 현황</span><b id="badgeDetailProgress"></b></div>
+                <div class="badge-detail-row"><span>획득일</span><b id="badgeDetailDate"></b></div>
+            </div>
+        </div>
+
+        <!-- 알림 모달 -->
+        <div class="modal" id="notifModal">
+            <div class="modal-content" style="height:auto;max-height:70vh;">
+                <div class="modal-head">
+                    <h2>알림</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeNotifications()" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <div id="notifList"></div>
+            </div>
+        </div>
+
+        <!-- 다른 유저 프로필 (전체화면) -->
+        <div class="modal subpage-modal" id="userProfileModal">
+            <div class="subpage-content">
+                <div class="modal-head">
+                    <h2 id="upNickname">닉네임</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeUserProfile()" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+
+                <span class="close-friend-badge" id="upCloseFriendBadge" style="display:none;"><i class="fa-solid fa-star"></i> 친한 친구</span>
+
+                <div class="profile-action-row">
+                    <div class="profile-photo" style="width:60px;height:60px;font-size:1.5rem;"><i class="fa-solid fa-user"></i></div>
+                    <button class="btn-lever" id="upFollowBtn" onclick="toggleFollow(currentProfileNickname)">팔로우</button>
+                    <button class="settings-btn" style="position:static;" onclick="openUserActionModal()"><i class="fa-solid fa-ellipsis"></i></button>
+                </div>
+
+                <div class="profile-follow-counts">
+                    <span class="clickable-name" id="upFollowerCount" onclick="openFollowListModal('followers')">팔로워 0</span>
+                    <span class="clickable-name" id="upFollowingCount" onclick="openFollowListModal('following')">팔로잉 0</span>
+                </div>
+
+                <p class="profile-stats" id="upLikeCategories" style="margin-bottom:16px;"></p>
+
+                <div class="section-sublabel">인증마크</div>
+                <div class="badge-row" id="upBadgeRow" style="margin-bottom:20px;"></div>
+
+                <div class="section-title"><i class="fa-solid fa-comment-dots"></i> 최근에 쓴 리뷰</div>
+                <div id="upReviewList"></div>
+            </div>
+        </div>
+
+        <!-- 팔로워 / 팔로잉 목록 (전체화면) -->
+        <div class="modal subpage-modal" id="followListModal">
+            <div class="subpage-content">
+                <div class="modal-head">
+                    <h2 id="followListTitle">팔로워</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeFollowList()" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <div id="followListContent"></div>
+            </div>
+        </div>
+
+        <!-- 유저 프로필 - 설정(...) 메뉴 -->
+        <div class="modal" id="userActionModal">
+            <div class="modal-content" style="height:auto;max-height:60vh;">
+                <div class="modal-head">
+                    <h2 id="userActionNickname">닉네임</h2>
+                    <i class="fa-solid fa-xmark" onclick="closeUserActionModal()" style="cursor:pointer;font-size:1.3rem;"></i>
+                </div>
+                <div class="settings-nav" id="userActionList"></div>
+            </div>
+        </div>
+
+        <!-- 하단 네비게이션 -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-view="home" onclick="switchView('home')">
+                <i class="fa-solid fa-house"></i>
+                <span>홈</span>
+            </button>
+            <button class="nav-item" data-view="community" onclick="switchView('community')">
+                <i class="fa-solid fa-users"></i>
+                <span>커뮤니티</span>
+            </button>
+            <button class="nav-item" data-view="myPage" onclick="switchView('myPage')">
+                <i class="fa-solid fa-user"></i>
+                <span>마이페이지</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        /* =========================================================
+           0. 목업 데이터
+           ========================================================= */
+
+        // 가게 데이터베이스 (홈/검색/커뮤니티/마이페이지가 모두 이 데이터를 공유)
+        const storeDB = {
+            "강남 파스타 공방": { city: "서울", category: "양식", rating: 4.3, address: "서울 강남구 테헤란로 123 1층", tags: ["ad_free", "friend"],
+                menu: { name: "시그니처 바질 파스타", price: "14,000원", desc: "수제 바질 페스토와 생면의 조화" },
+                reviews: [
+                    { id: "r1", author: "미식가김철수", tag: "친한 친구", rating: 5, text: "분위기 좋고 간이 딱 맞습니다. 데이트 코스로 강추해요.", hasPhoto: true },
+                    { id: "r2", author: "파스타러버", tag: null, rating: 4, text: "면이 살짝 퍼진 감이 있었지만 소스는 훌륭했어요.", hasPhoto: false }
+                ] },
+            "역삼 수제버거 클럽": { city: "서울", category: "양식", rating: 4.5, address: "서울 강남구 역삼로 45", tags: ["ad_free"],
+                menu: { name: "클래식 치즈버거", price: "9,800원", desc: "통패티와 수제 소스의 클래식 조합" },
+                reviews: [
+                    { id: "r1", author: "버거홀릭", tag: "친한 친구", rating: 5, text: "패티 육즙이 미쳤어요. 감자튀김도 바삭바삭.", hasPhoto: true, likes: 4 }
+                ] },
+            "해운대 밀면 본가": { city: "부산", category: "한식", rating: 4.6, address: "부산 해운대구 달맞이길 12", tags: ["ad_free", "friend"],
+                menu: { name: "물밀면", price: "8,000원", desc: "살얼음 육수의 시원한 밀면" },
+                reviews: [
+                    { id: "r1", author: "부산토박이", tag: "친한 친구", rating: 5, text: "여름에 이거 없으면 못 살아요. 진짜 찐맛집.", hasPhoto: true }
+                ] },
+            "광안리 조개찜 포차": { city: "부산", category: "한식", rating: 4.1, address: "부산 수영구 광안해변로 200", tags: [],
+                menu: { name: "모둠조개찜", price: "32,000원", desc: "싱싱한 제철 조개 모둠" },
+                reviews: [
+                    { id: "r1", author: "바다사랑", tag: null, rating: 4, text: "뷰가 예술입니다. 가격은 조금 있는 편.", hasPhoto: false }
+                ] },
+            "성심당 본점": { city: "대전", category: "카페", rating: 4.7, address: "대전 중구 대종로 480", tags: ["ad_free", "friend"],
+                menu: { name: "튀김소보로", price: "2,000원", desc: "대전 3대 명물 빵" },
+                reviews: [
+                    { id: "r1", author: "빵순이", tag: "친한 친구", rating: 5, text: "대전 오면 무조건 여기. 줄 서도 아깝지 않아요.", hasPhoto: true }
+                ] },
+            "둔산 갈비탕집": { city: "대전", category: "한식", rating: 4.2, address: "대전 서구 둔산로 100", tags: [],
+                menu: { name: "갈비탕", price: "12,000원", desc: "진한 사골 육수" },
+                reviews: [
+                    { id: "r1", author: "직장인A", tag: null, rating: 4, text: "점심시간에 딱 좋은 든든한 한 끼.", hasPhoto: false }
+                ] },
+            "동성로 막창골목": { city: "대구", category: "한식", rating: 4.4, address: "대구 중구 동성로 30", tags: ["friend"],
+                menu: { name: "양념막창", price: "15,000원", desc: "불맛 가득한 대구 스타일 막창" },
+                reviews: [
+                    { id: "r1", author: "대구찐맛", tag: "친한 친구", rating: 5, text: "이 집 없으면 대구 여행 의미없음.", hasPhoto: true }
+                ] },
+            "서문시장 납작만두": { city: "대구", category: "분식", rating: 4.0, address: "대구 중구 큰장로26길", tags: [],
+                menu: { name: "납작만두", price: "4,000원", desc: "바삭하게 구운 대구식 납작만두" },
+                reviews: [
+                    { id: "r1", author: "만두러버", tag: null, rating: 4, text: "가성비 최고, 간식으로 딱.", hasPhoto: false }
+                ] },
+            "이고집만두": { city: "천안", category: "한식", rating: 3.219061, kakaoRating: 4.0, ratingSource: "찐맛로그", restaurantId: "22319551", address: "충남 천안시 동남구 태조산길 258 1층", tags: [],
+                menu: { name: "얼큰샤브만두전골", price: "15,000원", desc: "매운 육수에 굴림만두와 채소, 고기를 넣은 전골" },
+                reviews: [
+                    { id: "3ae37a17f750918a", reviewer_id: "1198901395", author: "딸기세개", rating: 5.0, text: "맛으로 모든 단점이 사라지는 맛집입니다.\n얼큰먹었는데 약간매운 가볍고 칼칼한 깔끔한 맛입니다. \n교자만두는 심심해서 더 맛있어요.", hasPhoto: true, date: "2026.09.14." },
+                    { id: "9e0b22162776cc81", reviewer_id: "1065716529", author: "캬핳", rating: 4.0, text: "여행와서 현지인추천으로 왔는데, 이런 만두는 처음 먹어봅니다. 지역맛집이 맞네요. 천안여행오면 들러볼만합니다!", hasPhoto: true, date: "2026.09.12." },
+                    { id: "b87cc68385bb3a77", reviewer_id: "1328615736", author: "키티", rating: 2.0, text: "가격 적당하고 맛은 조미료맛이 너무 쎄서\n나중이 끓이다보니 국물이 엄청 짜지네요.\n다시는 안갈 것 같습니다", hasPhoto: true, date: "2026.08.11." },
+                    { id: "9451c9dfb23aee60", reviewer_id: "1343810350", author: "ESS", rating: 4.0, text: "주차하기 쥰나 힘들지만\n맛은 있습니다", hasPhoto: true, date: "2026.06.03." },
+                    { id: "9c169ff08430bfae", reviewer_id: "1335511812", author: "임소리", rating: 1.0, text: "주차 친절하게 도와주셔서 감사합니다.\n다만 저랑 친구랑 같이 먹었던 전골 2인분이 어떤 재료 때문인지는 모르겠지만 둘 다 배탈이 나서 저녁에 고생좀 했네요... 더보기", hasPhoto: true, date: "2026.05.10." },
+                    { id: "64d5403016bba99c", reviewer_id: "770487333", author: "sosoyoyo", rating: 3.0, text: "밀푀유나베 스타일인데 고기가 작아도 너무 작음 국물은 굉장히 맑은 편이라 호불호 있을듯. 만두는 훌륭", hasPhoto: true, date: "2026.04.27." },
+                    { id: "b12dbb101ac86cf8", reviewer_id: "2153604219", author: "돼지다람쥐", rating: 4.0, text: "담백하고 맛있다! 하지만 두시간 기다릴맛은 아님", hasPhoto: true, date: "2026.02.21." },
+                    { id: "9e614014d78b6a02", reviewer_id: "1773064846", author: "Issa", rating: 5.0, text: "맑은, 얼큰 둘 다 맛있고 군만두도 꼭 드세요! 맛집으로 추천하면 다들 만족한 곳 입니다", hasPhoto: true, date: "2026.01.08." },
+                    { id: "6e7a38ebe661f55e", reviewer_id: "398807289", author: "과노c슬기로운미식생활", rating: 5.0, text: "-이고집만두\n-충남 천안시 동남구 유량동 8-3\n-고집 부릴만하다\n-밀푀유나베 스타일의 만두전골\n... 더보기", hasPhoto: true, date: "2026.01.07." },
+                    { id: "d915fbd8b00884d1", reviewer_id: "3687436943", author: "이단비", rating: 3.0, text: "얼큰은\n역시나 맛있음 근데 고기가 거의 급식 제육짜바리보다 훨씬 얇음 등ㅊ은 혜자급일정도 예전이랑 좀 달라져서 아쉽 ㅠ", hasPhoto: true, date: "2025.11.23." },
+                    { id: "729c226d0ed9b818", reviewer_id: "1059291650", author: "먹큼", rating: 5.0, text: "솔직히 천안에서 이고집 만두 모르면 간첩이다 할 정도로 유명한데 맛있음 가끔 생각날 때 가는 집.. 근데 주차랑 웨이팅이 있는게 좀 아쉽긴 함", hasPhoto: true, date: "2025.09.11." },
+                    { id: "09fed4bfe7610aa3", reviewer_id: "1627787986", author: "맛있는 게 젤 좋아", rating: 5.0, text: "너무 맛있어요! 군만두 필수 ⭐️🧡\n주차장도 있고 평일은 웨이팅 없이 먹을 수 있었어요!\n한 가지 단점은 방에서 먹었는데 ... 더보기", hasPhoto: true, date: "2025.07.23." },
+                    { id: "cb1cd17c2a963bba", reviewer_id: "1330368241", author: "DDogani", rating: 4.0, text: "만두 속이 꽉차고 알참… 전골은 갈수록 점점 짜긴 함", hasPhoto: true, date: "2025.06.24." },
+                    { id: "210fcc42c1852595", reviewer_id: "1468939795", author: "문희사항", rating: 2.0, text: "기대했던것에 비해 평범한 맛", hasPhoto: true, date: "2025.06.15." },
+                    { id: "3b8c9d1363d1bb3c", reviewer_id: "1337682865", author: "나름너그러운편", rating: 5.0, text: "최고의 만두,,,,", hasPhoto: true, date: "2025.06.02." },
+                    { id: "fa4afdc18e55801c", reviewer_id: "2205518310", author: "^^", rating: 5.0, text: "담백하니 맛있어요\n웨이팅은 있는데 오래 기다리지 않아도 됐어요\n주차장은 가게앞도 있고 수련원... 더보기", hasPhoto: true, date: "2025.04.01." },
+                    { id: "38b1deaa3af18f66", reviewer_id: "1552323331", author: "툼", rating: 4.0, text: "짱맛있어용!!", hasPhoto: true, date: "2025.03.18." },
+                    { id: "ae84389a20b5d9ee", reviewer_id: "1146819169", author: "예민한미뢰", rating: 4.0, text: "밀푀유나베 스타일의 만둣국\n한국 정통 만둣국 스타일은 아니지만 깔끔한 편이고요.\n\n굴림만두가 퍽퍽하... 더보기", hasPhoto: true, date: "2025.01.29." },
+                    { id: "4e75c6f822563067", reviewer_id: "525952432", author: "임ss", rating: 4.0, text: "만두전골이 왜이리 비싸?라고 생각했지만\n소고기를 보고 납득했습니다.\n주차요원분들이 계시지만, 주차장은 손님수에 비해 적어보입... 더보기", hasPhoto: true, date: "2024.12.18." },
+                    { id: "b6f8a3ee391ea09a", reviewer_id: "2292460470", author: "somewhere", rating: 5.0, text: "담백하니 음식도 빨리 나오고 양도 많고 괜찮네요.\n천안 들리게 되면 한번쯤 가볼만 한거 같아요. \n마지막부분에 칼국수 먹을때 짜지긴 하는데 잘 조절해서 드시면 좋을것 같아요.", hasPhoto: true, date: "2024.11.20." },
+                ] },
+            "광명만두": { city: "천안", category: "분식", rating: 3.140724, kakaoRating: 4.1, ratingSource: "찐맛로그", restaurantId: "15426301", address: "충남 천안시 서북구 두정중4길 1 1층", tags: [],
+                menu: { name: "고기만두", price: "6,000원", desc: "얇은 만두피에 고기와 채소를 넣은 만두" },
+                reviews: [
+                    { id: "634ae071f79470d6", reviewer_id: "1240001091", author: "안고독한미식가", rating: 4.0, text: "맛있음\n또 먹고싶은 만두", hasPhoto: true, date: "2026.09.21." },
+                    { id: "b7c682de835c8d8d", reviewer_id: "3418589103", author: "먹부심Lee", rating: 1.0, text: "만두가 다 찢어져 있어서 \n먹어보니까 촉촉한 맛이 전혀 없게 느껴짐...\n그리고 일하는 직원인지 사장님인지 정말 너무 불친절함", hasPhoto: true, date: "2026.09.03." },
+                    { id: "278fd3e0394ed398", reviewer_id: "3509362382", author: "기니", rating: 3.0, text: "26. 6. 방문\n\n탕수만두 맛있어요 겉바속촉,, \n다만 쫄면이 제 입맛에는 별로였어요\n어... 더보기", hasPhoto: true, date: "2026.06.28." },
+                    { id: "f2c5402549e7800d", reviewer_id: "689172060", author: "기린좋아", rating: 3.0, text: "비빔만두 적극추천. 적당한 매운양념과 군만두의 궁합 훌륭함. 고기만두도 맛있지만 김치만두를 추천. 다만 주차가 협소함.", hasPhoto: true, date: "2026.05.13." },
+                    { id: "af90ea7c58a52d84", reviewer_id: "2426487435", author: "점", rating: 5.0, text: "진짜 맛있어요", hasPhoto: true, date: "2026.05.04." },
+                    { id: "21535901ce20f0c6", reviewer_id: "909515964", author: "맛평가 제대로 합시다", rating: 3.0, text: "쫄면은 뭔가 살짝 부족한 맛. 군만두는 맛나고 좋았어요.", hasPhoto: true, date: "2026.01.25." },
+                    { id: "2ac330afc603ed01", reviewer_id: "1564581294", author: "맛있으면 🔋", rating: 5.0, text: "🔋🔋🔋🔋🔋\n군만두, 쫄면 무조건 주문합니다.\n가끔 홀이 바빠서 그런지 쫄면 소스 부족하게 나올 때가... 더보기", hasPhoto: true, date: "2025.12.15." },
+                    { id: "54dfed27fe6dada3", reviewer_id: "1353772415", author: "happy.time", rating: 4.0, text: "쫄면은 달아요. 개인적으로 튀김만두가 제일 맛있네요", hasPhoto: true, date: "2025.10.29." },
+                    { id: "5b3667514cf9b534", reviewer_id: "1134716794", author: "nyam", rating: 5.0, text: "탕수만두 사랑입니다…", hasPhoto: true, date: "2025.09.13." },
+                    { id: "18534edab563df7b", reviewer_id: "1344677575", author: "ㅇㅅㅎ", rating: 3.0, text: "맛은 있지만 홀 이모 살짝 불친절 하세요ㅠ\n고기만듀는 반죽에사  약간 신맛이 나요", hasPhoto: true, date: "2024.10.02." },
+                    { id: "07945f62daca92b7", reviewer_id: "1552323331", author: "툼", rating: 4.0, text: "만두 진짜 맛있음\n김치>튀김>고기 순으로 내 취향\n쫄면은 소스가 매콤해서 매운 거 잘 못먹는 사람은 많이 매울 듯 해요!", hasPhoto: true, date: "2024.08.23." },
+                    { id: "d55405635cfd1814", reviewer_id: "1712042169", author: "술빈", rating: 5.0, text: "어렸을때 오고 여행 온김에 왔는데 아직도 있네요 추억의 맛 싸고 진짜 맛있어요", hasPhoto: true, date: "2024.04.04." },
+                    { id: "f30c7a491509e8a0", reviewer_id: "386726370", author: "Jin Legend", rating: 5.0, text: "드디어 방문 합니다.\n그것도 평일에 자가용으로.\n맞있고. 금액 합리적이네요.\n... 더보기", hasPhoto: true, date: "2024.02.13." },
+                    { id: "95ed66a70cc3a36a", reviewer_id: "1337682865", author: "나름너그러운편", rating: 5.0, text: "배부른 상태에서 갔는데도 맛있었어요 \n특히 튀김만두!!!! 안에 육즙이 ㅠㅠ존맛💗", hasPhoto: true, date: "2024.02.06." },
+                    { id: "9f930bb496610fc0", reviewer_id: "314470331", author: "momo", rating: 5.0, text: "군만두 김치만두 쫄면 \n맛있어요~", hasPhoto: true, date: "2023.12.30." },
+                    { id: "0cefdc68ee10c615", reviewer_id: "385870661", author: "박진태", rating: 3.0, text: "비빔만두 먹음. 군만두의 피가 매우 얇아 신기함. 구워진 부분은 빠삭하게 씹혀 먹는 재미가 있음. 소는 돼지고기와 당면 등으로 되어있는데 대단치는 않음. 쫄면은 평범. 전체적으로 기대만은 못 했음. 다른... 더보기", hasPhoto: true, date: "2023.11.09." },
+                    { id: "d7e58af6dc9f16c2", reviewer_id: "1143892945", author: "내꿈은도비", rating: 1.0, text: "주문음식 : 고기만두, 비빔만두\n평가 : 만두전문집답게 고기만두의 육즙이 좋았다 만두를 사장님이 직접 빚는다고 알고있는데 거짓은 아닌듯\n\n... 더보기", hasPhoto: true, date: "2022.09.28." },
+                    { id: "5413c3a987d7d5a4", reviewer_id: "1630658044", author: "미래를 그리워하다", rating: 4.0, text: "유명한 만큼 식사시간 피해서 가야 할 가게~ 맛 위생 나쁘지 않고 전반적으로 친절함. 여러 만두집을 가봐도 여기는 군만두보다 찐만두를 꼭 맛봐야 한다는 생각이 사라지지 않는곳. 군만두도 물론 맛있음. 굿!", hasPhoto: true, date: "2022.08.21." },
+                ] },
+            "달식당": { city: "천안", category: "돈까스,우동", rating: 3.620791, kakaoRating: 4.5, ratingSource: "찐맛로그", restaurantId: "1221530357", address: "충남 천안시 동남구 대흥로 215 1층", tags: [],
+                menu: { name: "돈까스(치즈)", price: "12,000원", desc: "등심 돈까스에 바삭한 튀김옷과 특제 소스를 곁들인 메뉴" },
+                reviews: [
+                    { id: "13e40d1f235840ef", reviewer_id: "774053471", author: "리뷰맨", rating: 5.0, text: "요즘 물가에 비해 가격이 싼편이다 가성비 좋은듯 \n실내도 커서 나쁘지않음", hasPhoto: true, date: "2026.07.31." },
+                    { id: "c1e6e6b479b75154", reviewer_id: "2314881944", author: "워터글래스", rating: 5.0, text: "치즈돈까스, 우동, 모둠김밥 먹었어요! 진짜 전메뉴 다 맛있네요 ㅠㅠ 모둠김밥은 김밥 맛별로 2개씩 있습니다! 천안 놀러와서 젤 맛있게 먹음!", hasPhoto: true, date: "2026.07.17." },
+                    { id: "cee4722f4a92e7b4", reviewer_id: "1273257467", author: "화니!", rating: 3.0, text: "궁금해서 이것저것 시켜봤어요\n\n판모일 : 휴게소 음식처럼 대기업 맛이라 불호였어요\n돈가스 : ... 더보기", hasPhoto: true, date: "2026.05.09." },
+                    { id: "0068bf8097b4471e", reviewer_id: "1486343810", author: "여섯번째발가락", rating: 5.0, text: "가성비 갑\n맛도 좋다\n천안역 근처 먹... 더보기", hasPhoto: true, date: "2026.02.24." },
+                    { id: "f3ac7f46d56dcff9", reviewer_id: "398807289", author: "과노c슬기로운미식생활", rating: 4.0, text: "-달식당\n-충남 천안시 동남구 대흥동 134\n-천안역 가성비 분식\n-돈까스가 주력,,벗뜨 너... 더보기", hasPhoto: true, date: "2026.01.07." },
+                    { id: "594abee5067a5b2d", reviewer_id: "3365438884", author: "무니", rating: 5.0, text: "천안 유일 또간집..", hasPhoto: true, date: "2025.11.24." },
+                    { id: "27178decf2d82447", reviewer_id: "556552175", author: "🎈", rating: 5.0, text: "저렴하고 알차고… 치즈돈까스는 보시다시피 비주얼도 맛도 좋아요", hasPhoto: true, date: "2025.09.10." },
+                    { id: "7591e96e901e2f65", reviewer_id: "525262592", author: "강지수", rating: 5.0, text: "여기는 그냥 최고다\n난 오십대 중후반 사먹을 땐 거의 돈까스만 먹고 살았다 천안에 일보러 왔다가 우연히 찾아보고 왔는데… 대학로 정돈이고뭐고 다 의미 없다 이 크고 두툼한... 더보기", hasPhoto: true, date: "2025.01.22." },
+                    { id: "131b16fbec499346", reviewer_id: "1546822263", author: "찬미", rating: 4.0, text: "천안에 왔다가 점심 먹으러 왔어요.\n개인적으로 양은 많은데 돈까스도 나쁘진 않네요~~\n잘 먹고 갑니다!", hasPhoto: true, date: "2024.12.07." },
+                    { id: "7dfcaed1e5005688", reviewer_id: "550433263", author: "다크베어", rating: 5.0, text: "여기는 김밥 진짜 맛있어요~~ 돈까스 메밀소바도 최고예요~~ 돈까스 반달로 시키면 한장만 주셔서 김밥과 같이 혼밥 할수 있어서 좋아요~~ 매장안에 시원하고 김밥이나 돈까스는 남으면 포장해갈수 있도록 해주셔서 좋아요~<", hasPhoto: true, date: "2024.08.04." },
+                    { id: "6e4ef89d63e82963", reviewer_id: "1012707807", author: "박정수", rating: 3.0, text: "싼 가격에 많은 양, 즉 가성비가 좋은집이다.\n돈까스 자체는 무난하고 전국구 맛집들에 비교하면 실례인 수준.. 불모지 천안에서 적장히 한끼 떼우기 괜찮은수준.", hasPhoto: true, date: "2024.08.01." },
+                    { id: "5b409107c04855eb", reviewer_id: "905937796", author: "zzz...", rating: 5.0, text: "양 진짜 많고 맛있어요", hasPhoto: true, date: "2024.04.09." },
+                    { id: "d2964d51efd88a56", reviewer_id: "1174858523", author: "맛집 탐구 생활", rating: 4.0, text: "천안 역쪽 돈까스 집 \n\n두꺼운 일본식 돈까스 좋음 - 경양식 분위... 더보기", hasPhoto: true, date: "2023.08.23." },
+                    { id: "ee96519b9bca21c5", reviewer_id: "1801305321", author: "또또", rating: 5.0, text: "가성비 내리는데 맛까지 좋음", hasPhoto: true, date: "2023.05.08." },
+                    { id: "37f46acd2e9ea412", reviewer_id: "1565478049", author: "김용현", rating: 4.0, text: "돈까스 맛있습니다. 가격도 착하구, 양도 많습니다. 식사시간 근처에 사람이 많아서 음식 나올때까지 시간이 약간 걸립니다.", hasPhoto: true, date: "2023.04.29." },
+                    { id: "f4aa8687838d09c4", reviewer_id: "1917195775", author: "왕감자", rating: 5.0, text: "기본기 탄탄\n\n친절함 ⭐️⭐️⭐️⭐️\n맛 ⭐️... 더보기", hasPhoto: true, date: "2023.02.26." },
+                    { id: "81ec9d42a41eb661", reviewer_id: "2003567641", author: "이태원옥자", rating: 4.0, text: "가성비에 맛까지 좋습니다. 근처에서 밥먹을때 자주 이용할것 같아요. 한가지 아쉬운건 사장님이신지 어머님 한분이 직원들이랑 대화하는데 목소리도 크시고 좀 시끄러우시더라구요.. 그 외엔 다 좋았습니다~", hasPhoto: true, date: "2022.10.03." },
+                    { id: "70caa46e0d491a9f", reviewer_id: "772187196", author: "alexy", rating: 5.0, text: "천안역에서 가깝고 가격 저렴하고 맛도 좋음", hasPhoto: true, date: "2022.08.27." },
+                ] },
+            "고바우순두부쌈장 천안본점": { city: "천안", category: "한식", rating: 2.697594, kakaoRating: 3.4, ratingSource: "찐맛로그", restaurantId: "574471413", address: "충남 천안시 서북구 두정로 177", tags: [],
+                menu: { name: "우렁쌈장백반", price: "10,000원", desc: "쫄깃한 우렁이와 구수한 쌈장을 곁들인 백반" },
+                reviews: [
+                    { id: "82ddc76ed38e8565", reviewer_id: "1717458545", author: "sss", rating: 5.0, text: "아… 너무 맛있어요.. 순두부랑 우렁쌈장 최고!!!", hasPhoto: true, date: "2026.09.02." },
+                    { id: "3337d240122ea3e0", reviewer_id: "3409622733", author: "가나디", rating: 4.0, text: "수육 맛있어요. 수육이랑 우렁이쌈밥 궁합 좋습니다.\n이전에도 왔었는데 맛있어요😊\n서비스는 대신 기대하면 안됩니다. 많이 바쁜 매장이... 더보기", hasPhoto: true, date: "2026.08.16." },
+                    { id: "2b1886089477d4fc", reviewer_id: "1328615736", author: "키티", rating: 5.0, text: "주차는 협소해서 쬐끔 불편하지만 그래도 음식은 너무 너무 맛있어요! \n순두부찌개와 우렁쌈장의 가격도 너무 저렴하고\n... 더보기", hasPhoto: true, date: "2026.08.11." },
+                    { id: "a15f3ebc63f5e39d", reviewer_id: "1245718480", author: "옹두", rating: 1.0, text: "서비스가 너무 대박이네요\n홀 알바 분이 김치 가져다주시는데 제대로 확인도 안하시고 막 가져다 놓으니 김치국물 다 흘리시고 ^^..\n입고간 바... 더보기", hasPhoto: true, date: "2026.08.09." },
+                    { id: "ada611f3256c727c", reviewer_id: "1627787986", author: "맛있는 게 젤 좋아", rating: 5.0, text: "순두부랑 우렁쌈밥은 고바우가 최고야. \n삼겹살 시키면 순두부 서비스로 나와요~~!", hasPhoto: true, date: "2025.07.23." },
+                    { id: "a4acebb80eae1219", reviewer_id: "1331713993", author: "맛집기록", rating: 4.0, text: "맛으로는 견줄데가 없는데… 사장님께서 손님 배려 좀 해주시면 좋을 듯 ㅠ 안그래두 사람 많아서 시끌시끌한데 갈 때마다 소리 지르고 계심…", hasPhoto: true, date: "2025.04.08." },
+                    { id: "fa31952976aff24f", reviewer_id: "1538678757", author: "zzlzzlzz", rating: 4.0, text: "2025.3.7.금.오전10시반쯤\n삼겹살 2인에 공기밥1. 밥을 주문하면 순두부찌개가 나오는데 사진을 못찍음.\n삼겹살은 두툼한 편은 아니지만 먹을만함.\n쌈채소로 청상추랑 쑥갓을 주는데 쑥갓 ... 더보기", hasPhoto: true, date: "2025.03.07." },
+                    { id: "3d42362b79de25c4", reviewer_id: "4005674525", author: "병오년", rating: 1.0, text: "친절하신?편.. 이나 좀 눈치를 보이게 하고 위생이 좋지 않습니다.\n\n컵에 이상한 거 ... 더보기", hasPhoto: true, date: "2025.09.02." },
+                    { id: "b354ec8412264231", reviewer_id: "1383217548", author: "미각세포", rating: 3.0, text: "우렁쌈밥은 된장이 엄청 짜요.\n같이 나온 상추쌈에 싸먹으면 딱 알맛게 먹을 수 있더라구요.\n그리고 생우렁무침에 우렁도 많고 채소도 많고 새콤한게 맛있어요!\n주차장은... 더보기", hasPhoto: true, date: "2024.07.19." },
+                    { id: "1627828c096e9c21", reviewer_id: "384708394", author: "욜킴", rating: 5.0, text: "감자조림맛집 최고", hasPhoto: true, date: "2023.06.05." },
+                    { id: "23d59fa107cecd9c", reviewer_id: "2591923793", author: "웅이", rating: 1.0, text: "사장님이 돈을많이 버셔서 배장인가\n김그릇에 물이 가득고여있는데\n비가오니... 더보기", hasPhoto: false, date: "2026.08.12." },
+                    { id: "07c8ed3022c96076", reviewer_id: "1628568368", author: "오인규", rating: 1.0, text: "순두부에서 벌레가 나와서,\n기분 상했는데. 젊은사... 더보기", hasPhoto: false, date: "2026.06.15." },
+                    { id: "c7355edaaa936786", reviewer_id: "2143271437", author: "웬만하면 좋은 말 한다", rating: 5.0, text: "두정동 밥집 GOAT", hasPhoto: false, date: "2026.03.21." },
+                    { id: "00d0466eb1a85384", reviewer_id: "1966410851", author: "나나짱", rating: 3.0, text: "맛은\n있습니다 -!", hasPhoto: false, date: "2026.01.24." },
+                    { id: "5d7dc8cfa75aa4a9", reviewer_id: "543859789", author: "꾸기", rating: 5.0, text: "전통의맛집\n주차만 잘해결되면 최고의 백반집 입니다.", hasPhoto: false, date: "2026.01.18." },
+                    { id: "c2802f02e14046d0", reviewer_id: "1329351024", author: "잉걸불", rating: 2.0, text: "그 약간 일 잘하는 나에 취한 나선욱 말투 쓰는 알바생있어서 웃김", hasPhoto: false, date: "2025.12.10." },
+                    { id: "939983f143e7b4a7", reviewer_id: "1065410482", author: "영준", rating: 1.0, text: "들어갔는데 삼겹살 굽는냄새가 미친듯이 남. \n그래도 맛있다길래 환기 안되는 상태에서 기다리고 있었고 자리가 있어서 앉으려고 했더니 기다리라면서 화를 내네? ... 더보기", hasPhoto: false, date: "2025.11.30." },
+                    { id: "a7efb53b7e4de44e", reviewer_id: "2567178895", author: "검은비", rating: 1.0, text: "맛은 그럭저럭 있고 가성비도 괜찮아 밥 먹으러 몇번 간 곳인데 갈 때마다 느끼는 것이지만 너무 불친철하고 특히 안경쓴 남자가 사장인지! 손님 앞에서 대놓고 자기가 말한 테이블로 가지 않았다고 큰소리로 ... 더보기", hasPhoto: false, date: "2025.09.28." },
+                    { id: "cad9a87d4118e0eb", reviewer_id: "1589014556", author: "하암", rating: 4.0, text: "자극적이고 짜고 맛있어요... 그리고 시끄러워요", hasPhoto: false, date: "2025.09.13." },
+                    { id: "be1fd35720440dc8", reviewer_id: "3287710950", author: "신영경", rating: 1.0, text: "가족들이랑 맛있게 고기에 쌈밥이 먹고 싶어 갔는데\n짜증이 나서 겨우 먹고 왔네요...ㅜㅜ \n이 무더위에 땀흘리며 밥먹는거 최악이죠!\n더울때는 시원하게 추울때는 따... 더보기", hasPhoto: false, date: "2025.07.29." },
+                ] },
+            "송정떡갈비": { city: "광주", category: "한식", rating: 4.6, address: "광주 광산구 송정로 8", tags: ["ad_free", "friend"],
+                menu: { name: "떡갈비 정식", price: "18,000원", desc: "숯불에 구운 광주 대표 떡갈비" },
+                reviews: [
+                    { id: "r1", author: "광주토박이", tag: "친한 친구", rating: 5, text: "반찬까지 완벽한 한상, 강력 추천.", hasPhoto: true }
+                ] },
+            "무등산 보리밥": { city: "광주", category: "한식", rating: 4.2, address: "광주 동구 무등로 100", tags: [],
+                menu: { name: "보리밥 정식", price: "11,000원", desc: "직접 담근 된장과 나물" },
+                reviews: [
+                    { id: "r1", author: "등산객C", tag: null, rating: 4, text: "등산 후 든든하게 먹기 좋아요.", hasPhoto: false }
+                ] },
+            "제주 흑돼지 연탄구이": { city: "제주", category: "한식", rating: 4.7, address: "제주 제주시 노형동 55", tags: ["ad_free", "friend"],
+                menu: { name: "흑돼지 오겹살", price: "25,000원", desc: "제주산 흑돼지 연탄 직화구이" },
+                reviews: [
+                    { id: "r1", author: "제주러버", tag: "친한 친구", rating: 5, text: "육즙 미쳤어요, 제주 오면 필수코스.", hasPhoto: true }
+                ] },
+            "제주 고등어회 전문점": { city: "제주", category: "한식", rating: 4.3, address: "제주 서귀포시 성산읍", tags: [],
+                menu: { name: "고등어회", price: "20,000원", desc: "당일바리 싱싱한 고등어회" },
+                reviews: [
+                    { id: "r1", author: "바다향", tag: null, rating: 4, text: "비린내 없이 신선했어요.", hasPhoto: false }
+                ] },
+            // 아래 6곳은 FOOD_CATEGORIES 중 기존에 storeDB에 하나도 없던 카테고리(일식/중식/아시안/퓨전음식/야식/포장마차)를 채우기 위해 추가됨
+            "강남 스시오마카세": { city: "서울", category: "일식", rating: 4.6, address: "서울 강남구 논현로 88", tags: ["ad_free", "friend"],
+                menu: { name: "오마카세 런치코스", price: "55,000원", desc: "당일 공수한 제철 생선으로 구성한 코스" },
+                reviews: [
+                    { id: "r1", author: "미식가김철수", tag: null, rating: 5, text: "런치치고 구성이 알차고 생선 신선도가 훌륭해요.", hasPhoto: true }
+                ] },
+            "대전 마라향궁": { city: "대전", category: "중식", rating: 4.2, address: "대전 서구 둔산로 55", tags: [],
+                menu: { name: "마라샹궈", price: "16,000원", desc: "매콤한 마라 향이 가득한 중식 볶음 요리" },
+                reviews: [
+                    { id: "r1", author: "직장인A", tag: null, rating: 4, text: "얼얼하고 중독적인 맛, 매운맛 조절도 가능해요.", hasPhoto: false }
+                ] },
+            "광주 쌀국수 다이닝": { city: "광주", category: "아시안", rating: 4.4, address: "광주 서구 상무중앙로 20", tags: ["friend"],
+                menu: { name: "소고기 쌀국수", price: "10,000원", desc: "12시간 우린 진한 육수의 베트남식 쌀국수" },
+                reviews: [
+                    { id: "r1", author: "광주토박이", tag: null, rating: 5, text: "국물이 깊고 향신료 향이 강하지 않아 부담없어요.", hasPhoto: false }
+                ] },
+            "해운대 퓨전 다이닝": { city: "부산", category: "퓨전음식", rating: 4.3, address: "부산 해운대구 구남로 30", tags: ["ad_free"],
+                menu: { name: "김치리조또", price: "16,000원", desc: "한식 재료로 재해석한 이탈리안 리조또" },
+                reviews: [
+                    { id: "r1", author: "부산토박이", tag: "친한 친구", rating: 4, text: "익숙한 김치맛과 리조또가 의외로 잘 어울려요.", hasPhoto: true }
+                ] },
+            "동성로 야식포차": { city: "대구", category: "야식", rating: 4.1, address: "대구 중구 동성로 12", tags: ["friend"],
+                menu: { name: "매콤닭발", price: "18,000원", desc: "밤늦게 생각나는 매콤한 닭발" },
+                reviews: [
+                    { id: "r1", author: "대구찐맛", tag: "친한 친구", rating: 5, text: "야식으로 이만한 게 없음, 맥주랑 최고 궁합.", hasPhoto: false }
+                ] },
+        };
+
+        const reviewAdjustedScoreDB = {
+            "13e40d1f235840ef": 3.862667,
+            "c1e6e6b479b75154": 3.833333,
+            "cee4722f4a92e7b4": 2.8,
+            "0068bf8097b4471e": 3.796,
+            "f3ac7f46d56dcff9": 3.432,
+            "594abee5067a5b2d": 3.7,
+            "27178decf2d82447": 3.764,
+            "7591e96e901e2f65": 3.9,
+            "131b16fbec499346": 3.442667,
+            "7dfcaed1e5005688": 3.9,
+            "6e4ef89d63e82963": 3.096,
+            "5b409107c04855eb": 3.833333,
+            "d2964d51efd88a56": 3.4,
+            "ee96519b9bca21c5": 3.764,
+            "37f46acd2e9ea412": 3.808,
+            "f4aa8687838d09c4": 3.742667,
+            "81ec9d42a41eb661": 3.496,
+            "70caa46e0d491a9f": 3.796,
+            "82ddc76ed38e8565": 3.8,
+            "3337d240122ea3e0": 3.4736,
+            "2b1886089477d4fc": 4.0992,
+            "a15f3ebc63f5e39d": 1.2,
+            "ada611f3256c727c": 3.9,
+            "a4acebb80eae1219": 3.4,
+            "fa31952976aff24f": 3.4,
+            "3d42362b79de25c4": 1.0208,
+            "b354ec8412264231": 2.52,
+            "1627828c096e9c21": 3.8,
+            "23d59fa107cecd9c": 1.2,
+            "07c8ed3022c96076": 1.125333,
+            "c7355edaaa936786": 3.7,
+            "00d0466eb1a85384": 2.8,
+            "5d7dc8cfa75aa4a9": 3.9,
+            "c2802f02e14046d0": 2.0,
+            "939983f143e7b4a7": 1.1984,
+            "a7efb53b7e4de44e": 1.264,
+            "cad9a87d4118e0eb": 3.466667,
+            "be1fd35720440dc8": 0.860266,
+            "634ae071f79470d6": 3.573333,
+            "b7c682de835c8d8d": 1.243733,
+            "278fd3e0394ed398": 2.706667,
+            "f2c5402549e7800d": 2.9552,
+            "af90ea7c58a52d84": 3.8,
+            "21535901ce20f0c6": 2.8,
+            "2ac330afc603ed01": 3.7,
+            "54dfed27fe6dada3": 3.466667,
+            "5b3667514cf9b534": 3.7,
+            "18534edab563df7b": 2.7104,
+            "07945f62daca92b7": 3.5,
+            "d55405635cfd1814": 3.8,
+            "f30c7a491509e8a0": 3.7,
+            "95ed66a70cc3a36a": 3.8,
+            "9f930bb496610fc0": 3.766667,
+            "0cefdc68ee10c615": 2.8,
+            "d7e58af6dc9f16c2": 1.333333,
+            "5413c3a987d7d5a4": 3.728,
+            "3ae37a17f750918a": 3.766667,
+            "9e0b22162776cc81": 3.466667,
+            "b87cc68385bb3a77": 1.72,
+            "9451c9dfb23aee60": 3.370133,
+            "9c169ff08430bfae": 1.264,
+            "64d5403016bba99c": 2.8,
+            "b12dbb101ac86cf8": 3.466667,
+            "9e614014d78b6a02": 3.766667,
+            "6e7a38ebe661f55e": 3.7,
+            "d915fbd8b00884d1": 2.866667,
+            "729c226d0ed9b818": 3.8328,
+            "09fed4bfe7610aa3": 4.048,
+            "cb1cd17c2a963bba": 3.453333,
+            "210fcc42c1852595": 2.0,
+            "3b8c9d1363d1bb3c": 3.8,
+            "fa4afdc18e55801c": 3.972,
+            "38b1deaa3af18f66": 3.466667,
+            "ae84389a20b5d9ee": 3.4,
+            "4e75c6f822563067": 3.3104,
+            "b6f8a3ee391ea09a": 3.876
+        };
+
+        Object.values(storeDB).forEach(store => {
+            store.reviews.forEach(review => {
+                const adjustedScore = reviewAdjustedScoreDB[review.id];
+                if (typeof adjustedScore === "number") review.adjustedScore = adjustedScore;
+            });
+        });
+
+        const CITIES = ["서울", "부산", "대전", "대구", "천안", "광주", "제주"];
+
+        // 룰렛 메뉴 목록 (다양성 강화)
+        const menuList = [
+            "떡볶이 🥘", "제육볶음 🍲", "초밥 🍣", "파스타 🍝", "짜장면 🍜", "돈까스 🍱",
+            "햄버거 🍔", "치킨 🍗", "피자 🍕", "쌀국수 🍜", "마라탕 🌶️", "부대찌개 🍲",
+            "냉면 🥶", "삼겹살 🥓", "타코 🌮", "규동 🍚", "우동 🍥", "비빔밥 🍚",
+            "샐러드 🥗", "핫도그 🌭", "수제버거 🍔", "팟타이 🍤", "카레 🍛", "오므라이스 🍳", "국밥 🍲"
+        ];
+
+        /* =========================================================
+           커뮤니티 게시판 (커뮤니티 담당 팀원 작업을 이식)
+           - 게시물/댓글/답글은 모든 계정이 공유하는 하나의 목록(실제 게시판처럼)이고,
+             localStorage에 별도로 저장됩니다.
+           - "좋아요"는 baseLikes(원래 있던 좋아요 수) + likedBy(실제로 좋아요 누른 로그인
+             계정 닉네임 목록)로 나눠서 관리합니다. 그래야 계정마다 "내가 눌렀는지" 상태가
+             정확히 구분되고, 새로고침해도 유지됩니다.
+           - 글쓰기/댓글/답글/좋아요는 로그인이 필요하고, 그 외(목록 보기, 검색, 상세 보기)는
+             로그인 없이도 가능합니다.
+           ========================================================= */
+        const STORAGE_COMMUNITY_KEY = "jjinmatlog_community";
+        const COMMUNITY_TYPE_COLORS = {
+            "추천": { bg: "#fff0eb", color: "var(--primary-color)" },
+            "질문": { bg: "#e7f5ff", color: "#1971c2" },
+            "토론": { bg: "#f3f0ff", color: "#6741d9" },
+            "후기": { bg: "#e6fcf5", color: "#087f5b" }
+        };
+
+        const DEFAULT_COMMUNITY_POSTS = [
+            { id: 1, type: "추천", author: "서울먹방러", title: "성수에서 부모님과 가기 좋은 한식집 추천", content: "조용하고 반찬 구성이 좋은 곳을 찾고 있어요. 주차 가능하면 더 좋습니다!", image: null, createdAt: "2026-09-22T09:00:00", views: 318, baseLikes: 24, likedBy: [],
+                comments: [
+                    { id: "c1-1", author: "맛있는하루", content: "성수 솥밥 다이닝 추천해요. 예약하면 대기 부담이 적어요.", createdAt: "2026-09-22T10:20:00", baseLikes: 0, likedBy: [], replies: [] },
+                    { id: "c1-2", author: "한끼기록", content: "뚝섬 쪽 한정식집도 분위기가 차분해서 좋았습니다.", createdAt: "2026-09-22T12:40:00", baseLikes: 0, likedBy: [], replies: [] }
+                ] },
+            { id: 2, type: "토론", author: "미식가김철수", title: "오마카세는 점심과 저녁 중 언제가 더 만족스러울까요?", content: "가격 차이를 고려하면 점심이 합리적이라는 의견도 있고, 저녁 구성이 좋다는 의견도 있네요.", image: null, createdAt: "2026-09-21T18:00:00", views: 241, baseLikes: 18, likedBy: [],
+                comments: [
+                    { id: "c2-1", author: "커피산책", content: "첫 방문이라면 점심으로 취향을 확인해 보는 편이에요.", createdAt: "2026-09-21T19:10:00", baseLikes: 0, likedBy: [], replies: [] },
+                    { id: "c2-2", author: "동네맛집", content: "제철 재료를 기대한다면 저녁 구성이 조금 더 풍성했습니다.", createdAt: "2026-09-21T20:05:00", baseLikes: 0, likedBy: [], replies: [] }
+                ] },
+            { id: 3, type: "질문", author: "커피산책", title: "강남에서 노트북 하기 좋은 카페 있을까요?", content: "콘센트가 있고 너무 시끄럽지 않은 곳을 찾습니다. 커피 맛도 중요해요.", image: null, createdAt: "2026-09-20T14:00:00", views: 156, baseLikes: 11, likedBy: [],
+                comments: [
+                    { id: "c3-1", author: "맛있는하루", content: "테헤란 필터 커피는 평일 오전이 비교적 조용해요.", createdAt: "2026-09-20T15:30:00", baseLikes: 0, likedBy: [], replies: [] }
+                ] },
+            { id: 4, type: "추천", author: "동네맛집", title: "비 오는 날 생각나는 국밥집", content: "대학로 국밥집은 국물이 진하고 혼자 가도 편해서 자주 찾게 됩니다.", image: null, createdAt: "2026-09-19T11:00:00", views: 402, baseLikes: 31, likedBy: [],
+                comments: [
+                    { id: "c4-1", author: "한끼기록", content: "저도 깍두기와 같이 먹는 조합을 좋아해요.", createdAt: "2026-09-19T12:00:00", baseLikes: 0, likedBy: [], replies: [] },
+                    { id: "c4-2", author: "커피산책", content: "늦은 저녁에도 식사할 수 있어서 좋았습니다.", createdAt: "2026-09-19T13:00:00", baseLikes: 0, likedBy: [], replies: [] }
+                ] },
+            { id: 5, type: "후기", author: "맛있는하루", title: "역삼 수제버거 클럽, 점심 방문 후기", content: "패티는 육즙이 충분했고 번도 눅눅하지 않았습니다. 감자튀김까지 포함한 세트가 가장 만족스러웠어요. 다만 점심에는 주문 후 15분 정도 기다렸습니다.", image: null, createdAt: "2026-09-18T13:00:00", views: 287, baseLikes: 27, likedBy: [],
+                comments: [
+                    { id: "c5-1", author: "한끼기록", content: "저도 점심에 갔는데 패티 굽기가 좋았어요.", createdAt: "2026-09-18T14:00:00", baseLikes: 0, likedBy: [], replies: [] },
+                    { id: "c5-2", author: "동네맛집", content: "웨이팅 시간 정보 감사합니다!", createdAt: "2026-09-18T15:00:00", baseLikes: 0, likedBy: [], replies: [] }
+                ] },
+            { id: 6, type: "후기", author: "커피산책", title: "혜화 책방커피 평일 오후 방문", content: "크림 라테가 과하게 달지 않아 좋았습니다. 책을 읽기 좋은 분위기지만 창가 자리는 오후에 빨리 차는 편이에요.", image: null, createdAt: "2026-09-17T15:00:00", views: 193, baseLikes: 16, likedBy: [],
+                comments: [
+                    { id: "c6-1", author: "맛있는하루", content: "주말에도 조용한 편인지 궁금해요.", createdAt: "2026-09-17T16:00:00", baseLikes: 0, likedBy: [], replies: [] },
+                    { id: "c6-2", author: "한끼기록", content: "평일 낮에 가면 가장 여유롭습니다.", createdAt: "2026-09-17T17:00:00", baseLikes: 0, likedBy: [], replies: [] }
+                ] },
+            { id: 7, type: "질문", author: "한끼기록", title: "성수에서 1인 식사하기 편한 곳 추천 부탁드려요", content: "웨이팅이 너무 길지 않고 혼자 앉기 어색하지 않은 한식집을 찾고 있습니다.", image: null, createdAt: "2026-09-16T12:00:00", views: 98, baseLikes: 9, likedBy: [],
+                comments: [
+                    { id: "c7-1", author: "동네맛집", content: "성수 솥밥 다이닝은 혼밥 손님도 꽤 있었어요.", createdAt: "2026-09-16T13:00:00", baseLikes: 0, likedBy: [], replies: [] }
+                ] },
+            { id: 8, type: "토론", author: "매운맛연구소", title: "마라탕 재료는 많이 넣는 편인가요, 기본으로 가는 편인가요?", content: "재료를 많이 담으면 국물 맛이 흐려진다는 의견도 있고, 다양하게 먹는 재미가 있다는 의견도 있네요.", image: null, createdAt: "2026-09-15T20:00:00", views: 174, baseLikes: 14, likedBy: [],
+                comments: [
+                    { id: "c8-1", author: "커피산책", content: "저는 청경채와 버섯만 꼭 넣어요.", createdAt: "2026-09-15T21:00:00", baseLikes: 0, likedBy: [], replies: [] },
+                    { id: "c8-2", author: "맛있는하루", content: "분모자와 푸주를 빼면 국물이 더 깔끔하더라고요.", createdAt: "2026-09-15T22:00:00", baseLikes: 0, likedBy: [], replies: [] }
+                ] }
+        ];
+
+        function loadCommunityFromStorage() {
+            try {
+                const raw = localStorage.getItem(STORAGE_COMMUNITY_KEY);
+                if (raw) {
+                    const saved = JSON.parse(raw);
+                    if (Array.isArray(saved) && saved.length > 0) return saved;
+                }
+            } catch (e) { /* 로컬 스토리지를 쓸 수 없는 환경이면 메모리로만 동작 */ }
+            return null;
+        }
+
+        function saveCommunityToStorage() {
+            try {
+                localStorage.setItem(STORAGE_COMMUNITY_KEY, JSON.stringify(communityPosts));
+            } catch (e) { /* 저장 실패 시 무시하고 세션 내 동작은 계속 진행 */ }
+        }
+
+        let communityPosts = loadCommunityFromStorage() || DEFAULT_COMMUNITY_POSTS;
+        let communityTypeFilter = "전체";
+        let nextCommunityPostId = Math.max(...communityPosts.map(p => p.id), 0) + 1;
+        let currentCommunityPostId = null;
+        let communityOpenReplyFor = new Set(); // 지금 답글 입력창이 열려있는 댓글 id들
+        const communityViewedThisSession = new Set(); // 조회수 중복 증가 방지 (세션 한정)
+        let attachedCommunityImage = null;
+
+        /* =========================================================
+           회원 정보 로컬 저장 (새로고침해도 계정/로그인 상태 유지)
+           - jjinmatlog_users : 가입한 회원 목록(아이디/비밀번호 포함)
+           - jjinmatlog_session : 현재 로그인된 아이디
+           ========================================================= */
+        const STORAGE_USERS_KEY = "jjinmatlog_users";
+        const STORAGE_SESSION_KEY = "jjinmatlog_session";
+
+        /* =========================================================
+           계정별 데모 시드 데이터
+           - 여기 등록된 계정(jjinmatlog, test123)은 서로 완전히 독립된
+             알림 / 내가 쓴 리뷰 / 팔로잉·팔로워·친한친구 / 알레르기 / 선호·비선호 음식을 가집니다.
+           - 여기 등록되지 않은 계정(실제로 새로 회원가입한 계정 등)은 시드를 전혀 받지 않고
+             submitSignup()에서 만든 빈 상태 그대로 유지됩니다.
+           - "팔로우 관계"와 "그 관계를 알려주는 알림"은 항상 같이 세팅됩니다. 즉 로그인했을 때
+             이미 팔로워 수가 올라가 있고, 상대방 프로필의 팔로잉 목록에도 내가 보이고, 동시에
+             알림함에도 "OOO님이 팔로우하기 시작했어요"가 와 있어야 합니다. 알림을 "눌러야만"
+             팔로워 관계가 생기는 순서는 안 됩니다 — 알림 클릭은 그 사실을 확인하러 이동할 뿐입니다.
+           - 이 내용을 바꾸면 SEED_VERSION도 함께 올려주세요. 그래야 이미 로컬에 저장된 계정도
+             다음 로그인/새로고침 때 새 시드가 (기존 값은 유지한 채 병합으로) 반영됩니다.
+           ========================================================= */
+        const SEED_VERSION = 5;
+        const ACCOUNT_SEEDS = {
+            jjinmatlog: {
+                avgRating: 4.4,
+                badgeIds: ["gourmet", "ramen", "burger", "spicy"],
+                allergies: [],
+                likeCategories: ["한식", "양식"],
+                dislikeCategories: [],
+                followingList: ["부산토박이", "빵순이", "대구찐맛", "미식가김철수"],
+                followerList: ["파스타러버", "버거홀릭", "바다사랑", "여행객B", "광주토박이"],
+                friends: ["부산토박이", "빵순이", "대구찐맛"],
+                savedStores: ["성심당 본점"],
+                myReviews: [
+                    { store: "역삼 수제버거 클럽", reviewId: "r1" },
+                    { store: "송정떡갈비", reviewId: "r1" },
+                    { store: "서문시장 납작만두", reviewId: "r1" }
+                ],
+                notifications: [
+                    { id: "jj-n1", type: "like", text: "미식가김철수님이 회원님의 리뷰에 좋아요를 눌렀어요.", time: "10분 전", storeName: "역삼 수제버거 클럽", reviewId: "r1" },
+                    { id: "jj-n2", type: "newFollower", text: "광주토박이님이 회원님을 팔로우하기 시작했어요.", time: "2시간 전", nickname: "광주토박이" },
+                    { id: "jj-n3", type: "friendReview", text: "친한 친구 빵순이님이 새 리뷰를 남겼어요.", time: "어제", storeName: "성심당 본점", reviewId: "r1" },
+                    { id: "jj-n4", type: "like", text: "부산토박이님이 회원님의 리뷰에 좋아요를 눌렀어요.", time: "어제", storeName: "송정떡갈비", reviewId: "r1" },
+                    { id: "jj-n5", type: "newFollower", text: "여행객B님이 회원님을 팔로우하기 시작했어요.", time: "2일 전", nickname: "여행객B" },
+                    { id: "jj-n6", type: "info", text: "'해운대 밀면 본가'가 회원님이 선호하는 한식 신규 맛집으로 등록됐어요.", time: "3일 전", storeName: "해운대 밀면 본가" }
+                ]
+            },
+            test123: {
+                avgRating: 4.3,
+                badgeIds: ["ramen", "spicy"],
+                allergies: ["새우", "돼지고기"],
+                likeCategories: ["일식", "카페"],
+                dislikeCategories: ["분식"],
+                followingList: ["제주러버", "만두러버", "바다향"],
+                followerList: ["직장인A", "등산객C", "순대매니아"],
+                friends: ["제주러버"],
+                savedStores: ["강남 스시오마카세", "제주 흑돼지 연탄구이"],
+                myReviews: [
+                    { store: "강남 파스타 공방", reviewId: "r2" },
+                    { store: "제주 고등어회 전문점", reviewId: "r1" },
+                    { store: "동성로 야식포차", reviewId: "r1" }
+                ],
+                notifications: [
+                    { id: "t1-n1", type: "like", text: "만두러버님이 회원님의 리뷰에 좋아요를 눌렀어요.", time: "30분 전", storeName: "강남 파스타 공방", reviewId: "r2" },
+                    { id: "t1-n2", type: "newFollower", text: "등산객C님이 회원님을 팔로우하기 시작했어요.", time: "1시간 전", nickname: "등산객C" },
+                    { id: "t1-n3", type: "friendReview", text: "친한 친구 제주러버님이 새 리뷰를 남겼어요.", time: "어제", storeName: "제주 흑돼지 연탄구이", reviewId: "r1" },
+                    { id: "t1-n4", type: "like", text: "직장인A님이 회원님의 리뷰에 좋아요를 눌렀어요.", time: "어제", storeName: "제주 고등어회 전문점", reviewId: "r1" },
+                    { id: "t1-n5", type: "newFollower", text: "순대매니아님이 회원님을 팔로우하기 시작했어요.", time: "2일 전", nickname: "순대매니아" },
+                    { id: "t1-n6", type: "info", text: "'강남 스시오마카세'가 회원님이 선호하는 일식 신규 맛집으로 등록됐어요.", time: "3일 전", storeName: "강남 스시오마카세" }
+                ]
+            }
+        };
+
+        const DEFAULT_USERS = [
+            { id: "u0", username: "jjinmatlog", password: "demo1234", nickname: "찐맛로그유저", email: "demo@jjinlog.com",
+              avgRating: ACCOUNT_SEEDS.jjinmatlog.avgRating,
+              badgeIds: ACCOUNT_SEEDS.jjinmatlog.badgeIds.slice(),
+              allergies: ACCOUNT_SEEDS.jjinmatlog.allergies.slice(),
+              likeCategories: ACCOUNT_SEEDS.jjinmatlog.likeCategories.slice(),
+              dislikeCategories: ACCOUNT_SEEDS.jjinmatlog.dislikeCategories.slice(),
+              followingList: ACCOUNT_SEEDS.jjinmatlog.followingList.slice(),
+              followerList: ACCOUNT_SEEDS.jjinmatlog.followerList.slice(),
+              friends: ACCOUNT_SEEDS.jjinmatlog.friends.slice(),
+              savedStores: ACCOUNT_SEEDS.jjinmatlog.savedStores.slice(),
+              notifications: ACCOUNT_SEEDS.jjinmatlog.notifications.slice(),
+              seedVersion: SEED_VERSION,
+              myReviews: ACCOUNT_SEEDS.jjinmatlog.myReviews.slice() }
+        ];
+
+        function loadUsersFromStorage() {
+            try {
+                const raw = localStorage.getItem(STORAGE_USERS_KEY);
+                if (raw) {
+                    const saved = JSON.parse(raw);
+                    if (Array.isArray(saved) && saved.length > 0) return saved;
+                }
+            } catch (e) { /* 로컬 스토리지를 쓸 수 없는 환경이면 메모리로만 동작 */ }
+            return null;
+        }
+
+        function saveUsersToStorage() {
+            try {
+                localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(mockUsers));
+            } catch (e) { /* 저장 실패 시 무시하고 세션 내 동작은 계속 진행 */ }
+        }
+
+        function saveSession(username) {
+            try {
+                if (username) localStorage.setItem(STORAGE_SESSION_KEY, username);
+                else localStorage.removeItem(STORAGE_SESSION_KEY);
+            } catch (e) { /* 무시 */ }
+        }
+
+        function restoreSession() {
+            try {
+                const username = localStorage.getItem(STORAGE_SESSION_KEY);
+                if (username) {
+                    const user = mockUsers.find(u => u.username === username);
+                    if (user) currentUser = user;
+                }
+            } catch (e) { /* 무시 */ }
+        }
+
+        // 이전 버전 로컬 저장 데이터(팔로우 기능 추가 이전)를 불러와도 깨지지 않도록 필드를 보정합니다.
+        function normalizeUser(u) {
+            if (!Array.isArray(u.followingList)) u.followingList = [];
+            if (!Array.isArray(u.followerList)) u.followerList = [];
+            if (!Array.isArray(u.friends)) u.friends = [];
+            if (!Array.isArray(u.allergies)) u.allergies = [];
+            if (!Array.isArray(u.likeCategories)) u.likeCategories = [];
+            if (!Array.isArray(u.dislikeCategories)) u.dislikeCategories = [];
+            if (!Array.isArray(u.savedStores)) u.savedStores = [];
+            if (!Array.isArray(u.notifications)) u.notifications = [];
+            // "내가 쓴 리뷰"는 계정마다 따로 관리됨 (예전엔 전역 목록이라 모든 계정이 같은 걸 봤음)
+            if (!Array.isArray(u.myReviews)) u.myReviews = [];
+            // 인증마크도 계정마다 따로 관리됨 (예전엔 전역 목록이라 모든 계정이 똑같은 뱃지를 봤음)
+            if (!Array.isArray(u.badgeIds)) u.badgeIds = [];
+            if (typeof u.avgRating !== "number") u.avgRating = 0;
+
+            // ACCOUNT_SEEDS에 등록된 계정(jjinmatlog, test123 등)은 계정마다 서로 다른 데모 상태를 가집니다.
+            // SEED_VERSION이 올라갈 때마다, 이미 저장돼서 예전 시드를 갖고 있던 계정에도 "빠진 값만"
+            // 합쳐 넣어줍니다(union). 통째로 덮어쓰지 않는 이유는, 그 사이 직접 팔로우/친구추가/찜 등으로
+            // 늘려둔 내용을 잃어버리지 않기 위해서입니다. 목록에 없는 계정(실제 회원가입 등)은 손대지 않습니다.
+            const seed = ACCOUNT_SEEDS[u.username];
+            if (seed && u.seedVersion !== SEED_VERSION) {
+                const mergeUnique = (arr, extra) => {
+                    extra.forEach(item => { if (!arr.includes(item)) arr.push(item); });
+                };
+                mergeUnique(u.followingList, seed.followingList);
+                mergeUnique(u.followerList, seed.followerList);
+                mergeUnique(u.friends, seed.friends);
+                mergeUnique(u.likeCategories, seed.likeCategories);
+                mergeUnique(u.dislikeCategories, seed.dislikeCategories);
+                mergeUnique(u.allergies, seed.allergies);
+                mergeUnique(u.savedStores, seed.savedStores);
+                mergeUnique(u.badgeIds, seed.badgeIds);
+                seed.myReviews.forEach(item => {
+                    if (!u.myReviews.some(r => r.store === item.store && r.reviewId === item.reviewId)) {
+                        u.myReviews.push(item);
+                    }
+                });
+                // avgRating은 아직 한 번도 안 채워진(0인) 경우에만 계정 고유 값으로 채웁니다.
+                if (u.avgRating === 0) u.avgRating = seed.avgRating;
+                // 알림은 "합치기"가 아니라 계정 고유의 새 세트로 통째로 교체합니다
+                // (읽다 만 예전 알림과 뒤섞이면 시연 때 혼란스러우므로).
+                u.notifications = seed.notifications.slice();
+                u.seedVersion = SEED_VERSION;
+            }
+
+            // 친한친구는 반드시 '팔로잉' 상태여야 하므로, 위에서 값을 보정한 뒤 다시 한번 확인합니다.
+            u.friends.forEach(f => {
+                if (!u.followingList.includes(f)) u.followingList.push(f);
+            });
+
+            return u;
+        }
+
+        // 회원 계정 (데모 계정 1개 포함, 로컬 저장된 값이 있으면 그걸 우선 사용) — 로그인은 아이디+비밀번호로 이 배열을 대조합니다.
+        let mockUsers = (loadUsersFromStorage() || DEFAULT_USERS).map(normalizeUser);
+        let currentUser = null;
+
+        // 회원가입 진행 중 임시 상태
+        let idChecked = false;
+        let nicknameChecked = false;
+        let emailVerified = false;
+        let pendingEmailCode = null;
+
+        const FOOD_CATEGORIES = ["한식", "분식", "양식", "일식", "중식", "카페", "아시안", "퓨전음식", "야식", "포장마차", "돈까스,우동"];
+        const CATEGORY_ICONS = {
+            "한식": "fa-bowl-rice",
+            "분식": "fa-store",
+            "양식": "fa-pizza-slice",
+            "일식": "fa-fish-fins",
+            "중식": "fa-fire-burner",
+            "카페": "fa-mug-hot",
+            "아시안": "fa-bowl-food",
+            "퓨전음식": "fa-utensils",
+            "야식": "fa-moon",
+            "포장마차": "fa-beer-mug-empty"
+        };
+        const ALLERGY_OPTIONS = ["해당없음", "난류", "우유", "메밀", "땅콩", "대두", "밀", "고등어", "게", "새우", "돼지고기", "복숭아", "토마토", "아황산류", "호두", "닭고기", "쇠고기", "오징어", "조개류", "잣"];
+
+        // 가게별 대표메뉴 알레르기 유발 성분 (storeDB와 별도 관리)
+        const menuAllergens = {
+            "강남 파스타 공방": ["밀", "우유"],
+            "역삼 수제버거 클럽": ["밀", "우유", "대두", "쇠고기"],
+            "해운대 밀면 본가": ["밀", "메밀"],
+            "광안리 조개찜 포차": ["조개류"],
+            "성심당 본점": ["밀", "우유", "난류"],
+            "둔산 갈비탕집": ["쇠고기", "대두"],
+            "동성로 막창골목": ["돼지고기"],
+            "서문시장 납작만두": ["밀", "돼지고기"],
+            "병천순대촌": ["돼지고기", "메밀"],
+            "천안 호두과자 명가": ["밀", "호두", "우유"],
+            "송정떡갈비": ["돼지고기", "밀", "대두"],
+            "무등산 보리밥": ["대두"],
+            "제주 흑돼지 연탄구이": ["돼지고기"],
+            "제주 고등어회 전문점": ["고등어"],
+            "강남 스시오마카세": ["밀", "대두", "새우", "조개류"],
+            "대전 마라향궁": ["땅콩", "밀", "대두"],
+            "광주 쌀국수 다이닝": ["쇠고기"],
+            "해운대 퓨전 다이닝": ["우유", "밀"],
+            "동성로 야식포차": ["닭고기", "대두"],
+            "천안 포장마차거리": ["돼지고기", "밀"]
+        };
+
+        // 인증마크(뱃지) 상세 정보
+        const badgeDB = {
+            gourmet: { icon: "fa-medal", name: "미식가", desc: "다양한 맛집을 폭넓게 탐방한 유저에게 주어지는 인증마크입니다.", condition: "리뷰 30개 이상 작성", progress: "32 / 30 달성 완료", earnedAt: "2025.11.02" },
+            ramen: { icon: "fa-bowl-rice", name: "라멘 마스터", desc: "일식 맛집을 깊이 탐방한 유저에게 주어지는 인증마크입니다.", condition: "일식 카테고리 리뷰 10개 이상", progress: "12 / 10 달성 완료", earnedAt: "2025.09.18" },
+            burger: { icon: "fa-burger", name: "수제버거 마스터", desc: "수제버거 맛집을 깊이 탐구한 유저에게 주어지는 인증마크입니다.", condition: "수제버거 메뉴 리뷰 8개 이상", progress: "8 / 8 달성 완료", earnedAt: "2025.07.30" },
+            spicy: { icon: "fa-fire", name: "매운맛 챌린저", desc: "매운 음식 도전을 즐기는 유저에게 주어지는 인증마크입니다.", condition: "매운맛 4단계 이상 메뉴 리뷰 5개 이상", progress: "6 / 5 달성 완료", earnedAt: "2025.12.05" }
+        };
+
+        // 다른 유저(리뷰 작성자) 프로필 목업 — 팔로우/팔로워/친한친구 기능에서 사용
+        const otherUsers = {
+            "미식가김철수": { likeCategories: ["양식", "일식"], badges: ["gourmet", "spicy"], followerNames: ["파스타러버", "버거홀릭"], followingNames: ["부산토박이", "빵순이", "대구찐맛"] },
+            "파스타러버": { likeCategories: ["양식"], badges: ["gourmet"], followerNames: ["미식가김철수"], followingNames: ["버거홀릭", "빵순이"] },
+            "버거홀릭": { likeCategories: ["양식"], badges: ["burger"], followerNames: ["미식가김철수", "파스타러버"], followingNames: ["부산토박이"] },
+            "부산토박이": { likeCategories: ["한식", "퓨전음식"], badges: ["gourmet", "spicy"], followerNames: ["미식가김철수", "버거홀릭", "바다사랑"], followingNames: ["빵순이", "대구찐맛"] },
+            "바다사랑": { likeCategories: ["한식"], badges: [], followerNames: ["부산토박이"], followingNames: ["미식가김철수"] },
+            "빵순이": { likeCategories: ["카페"], badges: ["ramen"], followerNames: ["미식가김철수", "부산토박이", "여행객B"], followingNames: ["대구찐맛", "광주토박이"] },
+            "직장인A": { likeCategories: ["한식", "중식"], badges: [], followerNames: [], followingNames: ["부산토박이", "대구찐맛"] },
+            "대구찐맛": { likeCategories: ["한식", "야식"], badges: ["spicy"], followerNames: ["부산토박이", "빵순이"], followingNames: ["미식가김철수"] },
+            "만두러버": { likeCategories: ["분식"], badges: [], followerNames: [], followingNames: ["대구찐맛"] },
+            "순대매니아": { likeCategories: ["한식"], badges: [], followerNames: [], followingNames: [] },
+            "여행객B": { likeCategories: ["카페", "포장마차"], badges: [], followerNames: ["빵순이"], followingNames: ["광주토박이"] },
+            "광주토박이": { likeCategories: ["한식", "아시안"], badges: ["gourmet"], followerNames: ["빵순이", "여행객B"], followingNames: ["등산객C"] },
+            "등산객C": { likeCategories: ["한식"], badges: [], followerNames: ["광주토박이"], followingNames: [] },
+            "제주러버": { likeCategories: ["한식"], badges: ["spicy"], followerNames: [], followingNames: ["바다향"] },
+            "바다향": { likeCategories: ["한식"], badges: [], followerNames: ["제주러버"], followingNames: [] }
+        };
+
+        /* =========================================================
+           otherUsers 팔로우 상태 저장/복원
+           - mockUsers(내 계정)의 followingList는 로컬 저장되지만, 상대방(otherUsers)의
+             followerNames/followingNames는 메모리에만 있어서 새로고침하면 초기 목업 상태로
+             되돌아가 "나는 팔로잉 중"인데 "상대방 팔로워 목록엔 내가 없는" 비대칭이 생겼음.
+             이를 막기 위해 otherUsers의 팔로우 관련 배열만 별도로 저장/복원한다.
+           ========================================================= */
+        const STORAGE_OTHERUSERS_KEY = "jjinmatlog_otherusers_follow";
+
+        function saveOtherUsersFollowState() {
+            try {
+                const snapshot = {};
+                Object.entries(otherUsers).forEach(([name, u]) => {
+                    snapshot[name] = { followerNames: u.followerNames, followingNames: u.followingNames };
+                });
+                localStorage.setItem(STORAGE_OTHERUSERS_KEY, JSON.stringify(snapshot));
+            } catch (e) { /* 저장 실패 시 무시하고 세션 내 동작은 계속 진행 */ }
+        }
+
+        function loadOtherUsersFollowState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_OTHERUSERS_KEY);
+                if (!raw) return;
+                const saved = JSON.parse(raw);
+                Object.entries(saved).forEach(([name, state]) => {
+                    if (!otherUsers[name]) return;
+                    if (Array.isArray(state.followerNames)) otherUsers[name].followerNames = state.followerNames;
+                    if (Array.isArray(state.followingNames)) otherUsers[name].followingNames = state.followingNames;
+                });
+            } catch (e) { /* 로컬 스토리지를 쓸 수 없는 환경이면 목업 초기값 그대로 사용 */ }
+        }
+
+        loadOtherUsersFollowState();
+
+        // 내(u)가 nickname을 팔로우/팔로워로 갖고 있다면, 상대방(otherUsers) 쪽에도 나를 반영합니다.
+        // "내가 A를 팔로우" → A의 followerNames에 나 / "A가 나를 팔로우" → A의 followingNames에 나
+        // 이렇게 해야 A의 프로필을 열었을 때 팔로워/팔로잉 목록에서도 서로 어긋나지 않습니다.
+        function syncOtherUsersRelations(u) {
+            u.followingList.forEach(name => {
+                if (otherUsers[name] && !otherUsers[name].followerNames.includes(u.nickname)) {
+                    otherUsers[name].followerNames.push(u.nickname);
+                }
+            });
+            u.followerList.forEach(name => {
+                if (otherUsers[name] && !otherUsers[name].followingNames.includes(u.nickname)) {
+                    otherUsers[name].followingNames.push(u.nickname);
+                }
+            });
+        }
+        mockUsers.forEach(syncOtherUsersRelations);
+        saveOtherUsersFollowState();
+
+        function getReviewsByAuthor(nickname) {
+            const result = [];
+            Object.entries(storeDB).forEach(([storeName, s]) => {
+                s.reviews.forEach(r => {
+                    if (r.author === nickname) result.push(Object.assign({}, r, { storeName: storeName }));
+                });
+            });
+            return result;
+        }
+
+        let currentProfileNickname = null; // 지금 열려있는 다른 유저 프로필 (내 프로필이면 null)
+        let lastFollowListType = null; // 마지막으로 연 팔로워/팔로잉 목록 종류
+
+        let activeCity = "서울";
+        let activeCategory = null; // 선택된 카테고리 (null이면 전체)
+
+        /* =========================================================
+           1. 초기화
+           ========================================================= */
+        function init() {
+            restoreSession();
+            renderCategoryGrid();
+            renderCityButtons();
+            renderCityRestaurants();
+            renderCommunityFeed();
+            loadReviewPhotos();
+            updateHeaderAuth();
+            renderMyPage();
+            setupBackdropClose();
+        }
+
+        // 모달/서브페이지 바깥(배경) 클릭 시 닫기
+        function setupBackdropClose() {
+            document.querySelectorAll(".modal").forEach(modal => {
+                modal.addEventListener("click", (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = "none";
+                    }
+                });
+            });
+        }
+
+        /* =========================================================
+           2. 카테고리 더보기
+           ========================================================= */
+        function categoryButtonHtml(cat) {
+            const icon = CATEGORY_ICONS[cat] || "fa-utensils";
+            return `
+                <button class="category-btn${cat === activeCategory ? " active" : ""}" onclick="selectCategory('${cat}')">
+                    <i class="fa-solid ${icon}"></i>
+                    <span>${cat}</span>
+                </button>
+            `;
+        }
+
+        // 선호 카테고리가 있으면 상단(더보기 없이 바로 보이는 영역)에 오도록 정렬
+        function renderCategoryGrid() {
+            const liked = currentUser ? currentUser.likeCategories.filter(c => FOOD_CATEGORIES.includes(c)) : [];
+            const rest = FOOD_CATEGORIES.filter(c => !liked.includes(c));
+            const ordered = [...liked, ...rest];
+            const main = ordered.slice(0, 6);
+            const extra = ordered.slice(6);
+
+            document.getElementById("categoryGrid").innerHTML = main.map(categoryButtonHtml).join("");
+            document.getElementById("extraCategories").innerHTML = extra.map(categoryButtonHtml).join("");
+        }
+
+        // 카테고리 버튼 클릭 시 도시 필터와 함께(AND 조건) 적용되고, 같은 카테고리를 다시 누르면 해제됨
+        function selectCategory(categoryName) {
+            activeCategory = activeCategory === categoryName ? null : categoryName;
+            renderCategoryGrid();
+            updateCityResultTitle();
+            renderCityRestaurants();
+            document.querySelector(".region-section").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        function toggleMoreCategories() {
+            const extra = document.getElementById("extraCategories");
+            const btn = document.getElementById("moreCategoryBtn");
+            const label = document.getElementById("moreCategoryLabel");
+            const isOpen = extra.style.display !== "none";
+            extra.style.display = isOpen ? "none" : "grid";
+            btn.classList.toggle("open", !isOpen);
+            label.textContent = isOpen ? "더보기" : "접기";
+        }
+
+        /* =========================================================
+           4. 메뉴 룰렛 (점점 느려지다 멈추는 자연스러운 연출)
+           ========================================================= */
+        function spinRoulette() {
+            const display = document.getElementById("rouletteResult");
+            display.classList.add("spinning");
+
+            function randomMenu() {
+                return menuList[Math.floor(Math.random() * menuList.length)];
+            }
+
+            const fastDelay = 60;
+            const fastDuration = 1000; // 앞 1초는 빠르게 회전
+            let elapsed = 0;
+
+            function fastTick() {
+                display.innerText = randomMenu();
+                elapsed += fastDelay;
+                if (elapsed < fastDuration) {
+                    setTimeout(fastTick, fastDelay);
+                } else {
+                    slowTick(90); // 이후 약 1초 동안 점점 느려지다 정지
+                }
+            }
+
+            function slowTick(delay) {
+                display.innerText = randomMenu();
+                const nextDelay = delay * 1.4;
+                if (nextDelay < 420) {
+                    setTimeout(() => slowTick(nextDelay), nextDelay);
+                } else {
+                    display.classList.remove("spinning");
+                    display.innerText = randomMenu();
+                }
+            }
+
+            fastTick();
+        }
+
+        /* =========================================================
+           5. 도시 버튼 & 홈 화면 식당 리스트
+           ========================================================= */
+        function renderCityButtons() {
+            const row = document.getElementById("cityBtnRow");
+            row.innerHTML = CITIES.map(city => `
+                <button class="city-btn${city === activeCity ? " active" : ""}" data-city="${city}" onclick="selectCity('${city}')">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>${city}</span>
+                </button>
+            `).join("");
+        }
+
+        function selectCity(city) {
+            activeCity = city;
+            document.querySelectorAll(".city-btn").forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.city === city);
+            });
+            updateCityResultTitle();
+            renderCityRestaurants();
+            switchView("restaurantList");
+        }
+
+        // 도시 결과 타이틀: 선택된 도시 + (선택된 카테고리가 있으면) 카테고리까지 함께 표시
+        function updateCityResultTitle() {
+            const categoryLabel = activeCategory ? ` · ${activeCategory}` : "";
+            document.getElementById("cityResultTitle").innerHTML =
+                `<i class="fa-solid fa-location-dot"></i> ${activeCity} 검증된 찐맛집${categoryLabel}`;
+        }
+
+        function renderCityRestaurants() {
+            let entries = Object.entries(storeDB).filter(([, s]) => s.city === activeCity);
+
+            if (activeCategory) entries = entries.filter(([, s]) => s.category === activeCategory);
+
+            renderRestaurantList(entries, "restaurantList");
+        }
+
+        function renderRestaurantList(entries, containerId) {
+            const container = document.getElementById(containerId);
+            if (entries.length === 0) {
+                container.innerHTML = `<div class="empty-state">조건에 맞는 맛집이 아직 없어요</div>`;
+                return;
+            }
+
+            if (currentUser) {
+                const rank = (s) => {
+                    if (currentUser.likeCategories.includes(s.category)) return 0;
+                    if (currentUser.dislikeCategories.includes(s.category)) return 2;
+                    return 1;
+                };
+                entries = [...entries].sort((a, b) => rank(a[1]) - rank(b[1]));
+            }
+
+            container.innerHTML = entries.map(([name, s]) => {
+                let prefTag = "";
+                let itemStyle = "";
+                if (currentUser) {
+                    if (currentUser.likeCategories.includes(s.category)) {
+                        prefTag = `<span class="pref-tag pref-like"><i class="fa-solid fa-heart"></i> 취향저격</span>`;
+                    } else if (currentUser.dislikeCategories.includes(s.category)) {
+                        prefTag = `<span class="pref-tag pref-dislike">비선호 장르</span>`;
+                        itemStyle = ' style="opacity:0.55;"';
+                    }
+                }
+                return `
+                    <div class="restaurant-item"${itemStyle} onclick="openStoreDetail('${name}')">
+                        <div class="res-info">
+                            <div class="res-name">${name} ${prefTag}</div>
+                            <div class="res-sub">${s.category} · 대표메뉴: ${s.menu.name}</div>
+                        </div>
+                        <div class="res-badge">${s.ratingSource ? `${s.ratingSource} ` : ""}★ ${s.rating.toFixed(1)}</div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        /* =========================================================
+           6. 검색
+           ========================================================= */
+        function doSearch() {
+            const query = document.getElementById("searchInput").value.trim();
+            if (!query) return;
+
+            const entries = Object.entries(storeDB).filter(([name, s]) =>
+                name.includes(query) || s.category.includes(query) || s.menu.name.includes(query)
+            );
+
+            document.getElementById("cityResultTitle").innerHTML =
+                `<i class="fa-solid fa-magnifying-glass"></i> '${query}' 검색결과 (${entries.length}) ` +
+                `<i class="fa-solid fa-xmark" style="cursor:pointer;font-size:0.8rem;color:var(--text-muted);margin-left:4px;" onclick="clearSearch()"></i>`;
+            renderRestaurantList(entries, "restaurantList");
+            switchView("restaurantList");
+        }
+
+        function clearSearch() {
+            document.getElementById("searchInput").value = "";
+            selectCity(activeCity);
+        }
+
+        /* =========================================================
+           8. 커뮤니티 게시판
+           ========================================================= */
+        function communityTypeBadgeHtml(type) {
+            const c = COMMUNITY_TYPE_COLORS[type] || { bg: "#f1f3f5", color: "#666" };
+            return `<span class="community-type-badge" style="background-color:${c.bg}; color:${c.color};">${type}</span>`;
+        }
+
+        function formatCommunityTime(value) {
+            const date = new Date(value);
+            const minutes = Math.floor((Date.now() - date.getTime()) / 60000);
+            if (minutes < 1) return "방금 전";
+            if (minutes < 60) return `${minutes}분 전`;
+            if (minutes < 1440) return `${Math.floor(minutes / 60)}시간 전`;
+            return `${date.getMonth() + 1}.${date.getDate()}`;
+        }
+
+        function communityPostLikeCount(post) { return post.baseLikes + post.likedBy.length; }
+        function communityIsLikedByMe(post) { return !!currentUser && post.likedBy.includes(currentUser.nickname); }
+
+        // 글 목록(검색/정렬/종류 필터) — 로그인 없이도 둘러볼 수 있음
+        function renderCommunityFeed() {
+            const container = document.getElementById("communityFeed");
+            const query = document.getElementById("communitySearch").value.trim().toLowerCase();
+            const sort = document.getElementById("communitySort").value;
+
+            let posts = communityPosts.filter(post =>
+                (communityTypeFilter === "전체" || post.type === communityTypeFilter) &&
+                (!query || [post.title, post.content, post.author, post.type].join(" ").toLowerCase().includes(query))
+            );
+
+            posts = posts.slice().sort((a, b) => {
+                if (sort === "popular") return communityPostLikeCount(b) - communityPostLikeCount(a);
+                if (sort === "comments") return b.comments.length - a.comments.length;
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+
+            if (posts.length === 0) {
+                container.innerHTML = `<div class="empty-state">검색 결과가 없어요</div>`;
+                return;
+            }
+
+            container.innerHTML = posts.map(post => `
+                <div class="feed-card" onclick="openCommunityPost(${post.id})">
+                    <div class="feed-card-author">${communityTypeBadgeHtml(post.type)} <span class="clickable-name" onclick="event.stopPropagation(); openUserProfile('${post.author}')">${post.author}</span></div>
+                    <div class="community-post-title">${post.title}</div>
+                    <div class="feed-card-text">${post.content}</div>
+                    ${post.image ? `<img src="${post.image}" alt="첨부 이미지" style="width:100%; max-height:150px; object-fit:cover; border-radius:10px; margin-bottom:8px;">` : ""}
+                    <div class="community-post-meta">${formatCommunityTime(post.createdAt)} · 조회 ${post.views} · 좋아요 ${communityPostLikeCount(post)} · 댓글 ${post.comments.length}</div>
+                </div>
+            `).join("");
+        }
+
+        // 글 종류 필터 칩
+        function selectCommunityType(type, btn) {
+            communityTypeFilter = type;
+            document.querySelectorAll(".community-type-filter").forEach(el => el.classList.toggle("active", el === btn));
+            renderCommunityFeed();
+        }
+
+        /* 새 글 작성 (로그인 필요) */
+        function openCommunityComposer() {
+            if (!currentUser) { openLogin(); return; }
+            document.getElementById("communityPostType").value = "추천";
+            document.getElementById("communityPostTitle").value = "";
+            document.getElementById("communityPostContent").value = "";
+            document.getElementById("communityPostImage").value = "";
+            document.getElementById("communityImagePreview").style.display = "none";
+            attachedCommunityImage = null;
+            openSubpage("communityComposeModal");
+        }
+
+        function handleCommunityImageChange(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById("communityImagePreview");
+            attachedCommunityImage = null;
+            preview.style.display = "none";
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                attachedCommunityImage = reader.result;
+                preview.src = attachedCommunityImage;
+                preview.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function submitCommunityPost() {
+            if (!currentUser) { openLogin(); return; }
+            const title = document.getElementById("communityPostTitle").value.trim();
+            const content = document.getElementById("communityPostContent").value.trim();
+            if (!title || !content) { alert("제목과 내용을 모두 입력해주세요."); return; }
+
+            communityPosts.unshift({
+                id: nextCommunityPostId++,
+                type: document.getElementById("communityPostType").value,
+                author: currentUser.nickname,
+                title, content,
+                image: attachedCommunityImage,
+                createdAt: new Date().toISOString(),
+                views: 0,
+                baseLikes: 0,
+                likedBy: [],
+                comments: []
+            });
+            saveCommunityToStorage();
+            closeSubpage("communityComposeModal");
+            renderCommunityFeed();
+        }
+
+        /* 글 상세 + 댓글/답글 (보기는 누구나, 좋아요/댓글/답글은 로그인 필요) */
+        function openCommunityPost(id) {
+            const post = communityPosts.find(p => p.id === id);
+            if (!post) return;
+            currentCommunityPostId = id;
+            communityOpenReplyFor.clear();
+            if (!communityViewedThisSession.has(id)) {
+                communityViewedThisSession.add(id);
+                post.views++;
+                saveCommunityToStorage();
+            }
+            renderCommunityPostDetail();
+            openSubpage("communityDetailModal");
+        }
+
+        function closeCommunityDetail() {
+            closeSubpage("communityDetailModal");
+            currentCommunityPostId = null;
+        }
+
+        function renderCommunityPostDetail() {
+            const post = communityPosts.find(p => p.id === currentCommunityPostId);
+            if (!post) return;
+            const container = document.getElementById("communityPostDetail");
+            const liked = communityIsLikedByMe(post);
+
+            container.innerHTML = `
+                <div class="feed-card-author">${communityTypeBadgeHtml(post.type)} <span class="clickable-name" onclick="openUserProfile('${post.author}')">${post.author}</span></div>
+                <h2 style="font-size:1.15rem; margin:10px 0;">${post.title}</h2>
+                <p style="font-size:0.9rem; color:#444; line-height:1.6; white-space:pre-wrap;">${post.content}</p>
+                ${post.image ? `<img src="${post.image}" alt="첨부 이미지" style="width:100%; max-height:280px; object-fit:cover; border-radius:10px; margin-top:12px;">` : ""}
+                <div class="community-post-meta" style="margin-top:10px;">${formatCommunityTime(post.createdAt)} · 조회 ${post.views}</div>
+                <button class="btn-check" style="margin:14px 0; color:${liked ? "var(--primary-color)" : "var(--text-color)"}; border-color:${liked ? "var(--primary-color)" : "var(--border-color)"};" onclick="toggleCommunityPostLike(${post.id})">
+                    <i class="fa-solid fa-heart"></i> 좋아요 ${communityPostLikeCount(post)}
+                </button>
+                <h3 style="font-size:0.95rem; border-top:1px solid var(--border-color); padding-top:14px; margin-bottom:10px;">댓글 ${post.comments.length}</h3>
+                <div id="communityCommentList">${post.comments.map(c => communityCommentHtml(post, c)).join("")}</div>
+                <div class="input-with-btn" style="margin-top:14px;">
+                    <input type="text" id="communityCommentInput" maxlength="120" placeholder="댓글을 남겨보세요" onkeydown="if(event.key==='Enter') submitCommunityComment(${post.id})">
+                    <button class="btn-check" onclick="submitCommunityComment(${post.id})">등록</button>
+                </div>
+            `;
+        }
+
+        function communityCommentHtml(post, comment) {
+            const liked = !!currentUser && comment.likedBy.includes(currentUser.nickname);
+            const showReplyForm = communityOpenReplyFor.has(comment.id);
+            return `
+                <div class="review-item" style="margin-bottom:10px;">
+                    <p style="font-weight:bold;"><span class="clickable-name" onclick="openUserProfile('${comment.author}')">${comment.author}</span></p>
+                    <p style="color:#444; margin-top:4px;">${comment.content}</p>
+                    <p class="community-post-meta" style="margin-top:6px;">${formatCommunityTime(comment.createdAt)}</p>
+                    <div style="display:flex; gap:14px; margin-top:6px;">
+                        <span class="review-like-count" style="cursor:pointer; ${liked ? "color:var(--primary-color);" : ""}" onclick="toggleCommunityCommentLike(${post.id}, '${comment.id}')"><i class="fa-solid fa-heart"></i> 좋아요 ${comment.baseLikes + comment.likedBy.length}</span>
+                        <span class="community-post-meta" style="cursor:pointer;" onclick="toggleCommunityReplyForm('${comment.id}')">답글 달기${comment.replies.length ? ` · ${comment.replies.length}` : ""}</span>
+                    </div>
+                    ${comment.replies.map(r => communityReplyHtml(post, comment, r)).join("")}
+                    ${showReplyForm ? `
+                        <div class="input-with-btn" style="margin:8px 0 0 16px;">
+                            <input type="text" id="communityReplyInput-${comment.id}" maxlength="120" placeholder="답글을 입력하세요" onkeydown="if(event.key==='Enter') submitCommunityReply(${post.id}, '${comment.id}')">
+                            <button class="btn-check" onclick="submitCommunityReply(${post.id}, '${comment.id}')">등록</button>
+                        </div>
+                    ` : ""}
+                </div>
+            `;
+        }
+
+        function communityReplyHtml(post, comment, reply) {
+            const liked = !!currentUser && reply.likedBy.includes(currentUser.nickname);
+            return `
+                <div style="margin:8px 0 0 16px; padding:10px 12px; border-left:3px solid var(--primary-color); background:var(--bg-color); border-radius:0 9px 9px 0;">
+                    <p style="font-weight:bold; font-size:0.85rem;"><span class="clickable-name" onclick="openUserProfile('${reply.author}')">${reply.author}</span></p>
+                    <p style="color:#444; margin-top:4px; font-size:0.85rem;">${reply.content}</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                        <span class="community-post-meta">${formatCommunityTime(reply.createdAt)}</span>
+                        <span class="review-like-count" style="cursor:pointer; ${liked ? "color:var(--primary-color);" : ""}" onclick="toggleCommunityReplyLike(${post.id}, '${comment.id}', '${reply.id}')"><i class="fa-solid fa-heart"></i> 좋아요 ${reply.baseLikes + reply.likedBy.length}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleCommunityPostLike(postId) {
+            if (!currentUser) { openLogin(); return; }
+            const post = communityPosts.find(p => p.id === postId);
+            if (!post) return;
+            const idx = post.likedBy.indexOf(currentUser.nickname);
+            if (idx >= 0) post.likedBy.splice(idx, 1);
+            else post.likedBy.push(currentUser.nickname);
+            saveCommunityToStorage();
+            renderCommunityPostDetail();
+        }
+
+        function submitCommunityComment(postId) {
+            if (!currentUser) { openLogin(); return; }
+            const input = document.getElementById("communityCommentInput");
+            const text = input.value.trim();
+            if (!text) return;
+            const post = communityPosts.find(p => p.id === postId);
+            if (!post) return;
+            post.comments.push({
+                id: `${post.id}-c${Date.now()}`,
+                author: currentUser.nickname,
+                content: text,
+                createdAt: new Date().toISOString(),
+                baseLikes: 0,
+                likedBy: [],
+                replies: []
+            });
+            saveCommunityToStorage();
+            renderCommunityPostDetail();
+        }
+
+        function toggleCommunityCommentLike(postId, commentId) {
+            if (!currentUser) { openLogin(); return; }
+            const post = communityPosts.find(p => p.id === postId);
+            const comment = post && post.comments.find(c => c.id === commentId);
+            if (!comment) return;
+            const idx = comment.likedBy.indexOf(currentUser.nickname);
+            if (idx >= 0) comment.likedBy.splice(idx, 1);
+            else comment.likedBy.push(currentUser.nickname);
+            saveCommunityToStorage();
+            renderCommunityPostDetail();
+        }
+
+        function toggleCommunityReplyForm(commentId) {
+            if (!currentUser) { openLogin(); return; }
+            if (communityOpenReplyFor.has(commentId)) communityOpenReplyFor.delete(commentId);
+            else communityOpenReplyFor.add(commentId);
+            renderCommunityPostDetail();
+        }
+
+        function submitCommunityReply(postId, commentId) {
+            if (!currentUser) { openLogin(); return; }
+            const input = document.getElementById(`communityReplyInput-${commentId}`);
+            const text = input.value.trim();
+            if (!text) return;
+            const post = communityPosts.find(p => p.id === postId);
+            const comment = post && post.comments.find(c => c.id === commentId);
+            if (!comment) return;
+            comment.replies.push({
+                id: `${commentId}-r${Date.now()}`,
+                author: currentUser.nickname,
+                content: text,
+                createdAt: new Date().toISOString(),
+                baseLikes: 0,
+                likedBy: []
+            });
+            communityOpenReplyFor.delete(commentId);
+            saveCommunityToStorage();
+            renderCommunityPostDetail();
+        }
+
+        function toggleCommunityReplyLike(postId, commentId, replyId) {
+            if (!currentUser) { openLogin(); return; }
+            const post = communityPosts.find(p => p.id === postId);
+            const comment = post && post.comments.find(c => c.id === commentId);
+            const reply = comment && comment.replies.find(r => r.id === replyId);
+            if (!reply) return;
+            const idx = reply.likedBy.indexOf(currentUser.nickname);
+            if (idx >= 0) reply.likedBy.splice(idx, 1);
+            else reply.likedBy.push(currentUser.nickname);
+            saveCommunityToStorage();
+            renderCommunityPostDetail();
+        }
+
+        /* =========================================================
+           9. 마이페이지 - 최근에 쓴 리뷰
+           ========================================================= */
+        function renderMyReviews() {
+            const container = document.getElementById("myReviewList");
+            if (currentUser.myReviews.length === 0) {
+                container.innerHTML = `<div class="empty-state">아직 작성한 리뷰가 없어요</div>`;
+                return;
+            }
+            container.innerHTML = currentUser.myReviews.map(item => {
+                const store = storeDB[item.store];
+                const review = store.reviews.find(r => r.id === item.reviewId);
+                return `
+                    <div class="review-card" onclick="openStoreDetail('${item.store}', '${item.reviewId}')">
+                        <div class="feed-card-top">
+                            <div>
+                                <div class="feed-card-author">나</div>
+                                <div class="feed-card-store">${item.store}</div>
+                            </div>
+                            <div class="feed-card-rating">★ ${review.rating.toFixed(1)}</div>
+                        </div>
+                        <div class="feed-card-text">${review.text}</div>
+                        ${review.hasPhoto ? `<div class="feed-card-photo"><i class="fa-solid fa-image"></i></div>` : ""}
+                    </div>
+                `;
+            }).join("");
+        }
+
+        /* =========================================================
+           10. 가게 상세 모달 (리뷰 단위로 열기 지원)
+           ========================================================= */
+        let currentModalStore = null; // 지금 가게 상세 모달에 열려있는 가게 이름 (찜하기 버튼이 참조)
+        let currentModalReviewId = null;
+        let reviewPhotoUrlsById = {};
+
+        function openStoreDetail(name, reviewId) {
+            const store = storeDB[name];
+            if (!store) return;
+
+            document.getElementById("newReviewCompose").style.display = "none";
+            document.getElementById("newReviewForm").style.display = "none";
+            document.getElementById("newReviewOpenBtn").textContent = "리뷰 작성";
+            document.getElementById("newReviewOpenBtn").style.display = store.restaurantId ? "inline-flex" : "none";
+            document.getElementById("modalReviewCount").textContent = `리뷰 ${store.reviews.length}개`;
+            document.getElementById("newReviewAuthor").textContent = currentUser
+                ? `작성자: ${currentUser.nickname}`
+                : "로그인 후 리뷰를 작성할 수 있습니다.";
+            document.getElementById("newReviewError").textContent = "";
+            document.getElementById("newReviewResult").style.display = "none";
+
+            // 어떤 화면(설정, 친구 프로필 등) 깊숙한 곳에서 열려도 가게 상세가 가려지지 않도록
+            // 다른 모달은 모두 닫고 가게 상세만 보이게 합니다.
+            document.querySelectorAll(".modal").forEach(m => {
+                if (m.id !== "storeModal") m.style.display = "none";
+            });
+
+            currentModalStore = name;
+            currentModalReviewId = reviewId || null;
+            updateModalSaveIcon();
+
+            document.getElementById("modalTitle").innerText = name;
+            document.getElementById("modalRating").innerHTML =
+                store.kakaoRating !== undefined && store.ratingSource === "찐맛로그"
+                    ? `카카오맵 ★ ${Number(store.kakaoRating).toFixed(1)}<br>찐맛로그 ★ ${store.rating.toFixed(1)}`
+                    : store.ratingSource
+                    ? `찐맛로그 점수 ★ ${store.rating.toFixed(1)}`
+                    : `★ ${store.rating.toFixed(1)} <span style="font-size:0.8rem;color:#666;">(광고 보정 완료)</span>`;
+            const scoreComparison = document.getElementById("reviewScoreComparison");
+            const hasScoreComparison = store.kakaoRating !== undefined && store.ratingSource === "찐맛로그";
+            document.getElementById("modalRating").style.display = hasScoreComparison ? "none" : "";
+            document.getElementById("modalRating").parentElement.style.marginBottom = hasScoreComparison ? "0" : "16px";
+            scoreComparison.style.display = hasScoreComparison ? "grid" : "none";
+            if (hasScoreComparison) {
+                document.getElementById("kakaoRatingValue").textContent = `★ ${Number(store.kakaoRating).toFixed(1)}`;
+                document.getElementById("jjinmatlogRatingValue").textContent = `★ ${store.rating.toFixed(1)}`;
+            }
+            document.getElementById("modalAddress").innerHTML =
+                `<i class="fa-solid fa-map-pin"></i> ${store.address}`;
+
+            const allergens = menuAllergens[name] || [];
+            const warnEl = document.getElementById("modalAllergyWarning");
+            if (allergens.length > 0) {
+                const overlap = currentUser ? allergens.filter(a => currentUser.allergies.includes(a)) : [];
+                if (overlap.length > 0) {
+                    warnEl.innerHTML = `<div class="allergy-warning"><i class="fa-solid fa-triangle-exclamation"></i> 회원님의 알레르기 유발 성분이 포함되어 있어요: <b>${overlap.join(", ")}</b></div>`;
+                } else {
+                    warnEl.innerHTML = `<div class="allergen-info">포함된 알레르기 유발 성분: ${allergens.join(", ")}</div>`;
+                }
+            } else {
+                warnEl.innerHTML = "";
+            }
+
+            document.getElementById("modalMenu").innerHTML = `
+                <p style="font-weight:bold;font-size:0.9rem;">${store.menu.name} - ${store.menu.price}</p>
+                <p style="font-size:0.8rem;color:#666;">${store.menu.desc}</p>
+            `;
+
+            renderStoreReviews(store, reviewId);
+
+            document.getElementById("storeModal").style.display = "flex";
+
+            if (reviewId) {
+                setTimeout(() => {
+                    const target = document.getElementById(`review-${reviewId}`);
+                    if (target) target.scrollIntoView({ block: "center" });
+                }, 50);
+            }
+        }
+
+        function loadReviewPhotos() {
+            fetch("/api/review-photos")
+                .then(response => {
+                    if (!response.ok) throw new Error("리뷰 사진 정보를 불러오지 못했습니다.");
+                    return response.json();
+                })
+                .then(payload => {
+                    reviewPhotoUrlsById = payload.photos || {};
+                    const store = currentModalStore && storeDB[currentModalStore];
+                    if (store && document.getElementById("storeModal").style.display === "flex") {
+                        renderStoreReviews(store, currentModalReviewId);
+                    }
+                })
+                .catch(() => {
+                    reviewPhotoUrlsById = {};
+                });
+        }
+
+        function renderStoreReviews(store, reviewId) {
+            const reviewsContainer = document.getElementById("modalReviews");
+            reviewsContainer.innerHTML = store.reviews.map((review, index) => {
+                const reviewText = String(review.text || "");
+                const photoUrls = review.hasPhoto ? (reviewPhotoUrlsById[String(review.id)] || []) : [];
+                const isLong = reviewText.length > 100;
+                const visibleText = isLong ? reviewText.slice(0, 100) : reviewText;
+                return `
+                    <div class="review-item${review.id === reviewId ? " highlighted" : ""}" id="review-${review.id}" data-review-index="${index}">
+                        <p style="font-weight:bold;margin-bottom:3px;"><span class="clickable-name" data-review-author="${escapeHtml(review.author)}">${escapeHtml(review.author)}</span></p>
+                        <p style="color:var(--primary-color);font-weight:700;margin-bottom:6px;">${"★".repeat(Math.round(review.rating))}${"☆".repeat(Math.max(0, 5 - Math.round(review.rating)))} ${review.rating.toFixed(1)}</p>
+                        <p class="review-body" style="color:#444;margin-bottom:6px;white-space:pre-wrap;">"${escapeHtml(visibleText)}"</p>
+                        ${isLong ? `<button class="review-expand-btn" type="button" data-review-expand="true">더보기</button>` : ""}
+                        ${photoUrls.length ? `<div class="review-photo-grid">${photoUrls.map((url, photoIndex) => `<img class="review-photo" src="/api/review-photo?review_id=${encodeURIComponent(String(review.id))}&index=${photoIndex}" alt="리뷰 사진" loading="lazy" onerror="removeFailedReviewPhoto(this)">`).join("")}</div>` : ""}
+                        ${review.date ? `<p style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;">${escapeHtml(review.date)}</p>` : ""}
+                    </div>
+                `;
+            }).join("");
+
+            reviewsContainer.querySelectorAll("[data-review-author]").forEach(author => {
+                author.addEventListener("click", () => openUserProfile(author.dataset.reviewAuthor));
+            });
+            reviewsContainer.querySelectorAll("[data-review-expand]").forEach(button => {
+                button.addEventListener("click", () => {
+                    const card = button.closest(".review-item");
+                    const body = card.querySelector(".review-body");
+                    const review = store.reviews[Number(card.dataset.reviewIndex)];
+                    const reviewText = String(review.text || "");
+                    const isExpanded = button.dataset.expanded === "true";
+                    body.textContent = `"${isExpanded ? reviewText.slice(0, 100) : reviewText}"`;
+                    button.dataset.expanded = String(!isExpanded);
+                    button.textContent = isExpanded ? "더보기" : "접기";
+                });
+            });
+        }
+
+        function removeFailedReviewPhoto(image) {
+            const gallery = image.parentElement;
+            image.remove();
+            if (gallery && !gallery.querySelector("img")) gallery.remove();
+        }
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, character => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[character]);
+        }
+
+        function toggleNewReviewForm() {
+            const compose = document.getElementById("newReviewCompose");
+            const form = document.getElementById("newReviewForm");
+            const isOpen = compose.style.display !== "none";
+            compose.style.display = isOpen ? "none" : "block";
+            form.style.display = isOpen ? "none" : "block";
+            document.getElementById("newReviewOpenBtn").textContent = isOpen ? "리뷰 작성" : "작성 취소";
+        }
+
+        async function submitNewStoreReview() {
+            if (!currentUser) {
+                openLogin();
+                return;
+            }
+
+            const storeName = currentModalStore;
+            const store = storeDB[storeName];
+            const reviewText = document.getElementById("newReviewText").value.trim();
+            const rating = Number(document.getElementById("newReviewRating").value);
+            const error = document.getElementById("newReviewError");
+            const button = document.getElementById("newReviewSubmitBtn");
+            error.textContent = "";
+
+            if (!store || !store.restaurantId) {
+                error.textContent = "찐맛로그 식당 데이터가 연결된 식당에서만 점수를 계산할 수 있습니다.";
+                return;
+            }
+            if (!reviewText) {
+                error.textContent = "리뷰 내용을 입력해주세요.";
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = "점수 계산 중...";
+            try {
+                const response = await fetch("/api/score-new-review", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        reviewer_id: currentUser.username,
+                        reviewer_name: currentUser.nickname,
+                        restaurant_id: store.restaurantId,
+                        rating,
+                        review_text: reviewText,
+                        has_photo: false
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || "리뷰 점수 계산에 실패했습니다.");
+
+                const adjustedScore = Number(result.review_adjusted_score);
+                if (!Number.isFinite(adjustedScore)) throw new Error("계산된 보정점수를 확인할 수 없습니다.");
+
+                const newReview = {
+                    id: result.review_id,
+                    reviewer_id: currentUser.username,
+                    author: currentUser.nickname,
+                    rating: result.original_rating,
+                    text: reviewText,
+                    hasPhoto: false,
+                    date: `${new Date().toISOString().slice(0, 10).replace(/-/g, ".")}.`,
+                    adjustedScore,
+                    textAnalysis: result.text_analysis
+                };
+                store.reviews.unshift(newReview);
+                document.getElementById("newReviewText").value = "";
+                openStoreDetail(storeName, newReview.id);
+
+                const labels = {
+                    taste: "맛", food_quality: "식재료", portion: "양", price: "가격",
+                    service: "서비스", waiting: "대기", parking_access: "주차",
+                    facility_hygiene: "위생·시설", atmosphere: "분위기", revisit_intent: "재방문 의사"
+                };
+                const mentioned = result.mentioned_aspects.map(aspect => labels[aspect] || aspect);
+                document.getElementById("newReviewCompose").style.display = "block";
+                document.getElementById("newReviewForm").style.display = "none";
+                document.getElementById("newReviewOpenBtn").textContent = "리뷰 작성";
+                const output = document.getElementById("newReviewResult");
+                output.innerHTML = `
+                    <b>원래 별점: ${"★".repeat(rating)}${"☆".repeat(5 - rating)} ${Number(result.original_rating).toFixed(1)}</b><br>
+                    <b>찐맛로그 보정점수: ${adjustedScore.toFixed(2)}</b>
+                    <div style="color:var(--text-muted);margin-top:4px;">언급된 평가 항목: ${mentioned.length ? mentioned.join(", ") : "없음"}</div>
+                `;
+                output.style.display = "block";
+            } catch (requestError) {
+                error.textContent = requestError.message || "점수 계산 중 오류가 발생했습니다.";
+            } finally {
+                button.disabled = false;
+                button.textContent = "리뷰 제출";
+            }
+        }
+
+        function closeModal() {
+            document.getElementById("storeModal").style.display = "none";
+        }
+
+        /* 찜하기 */
+        function updateModalSaveIcon() {
+            const btn = document.getElementById("modalSaveBtn");
+            const isSaved = currentUser && currentModalStore && currentUser.savedStores.includes(currentModalStore);
+            btn.classList.toggle("fa-solid", isSaved);
+            btn.classList.toggle("fa-regular", !isSaved);
+            btn.classList.toggle("saved", isSaved);
+        }
+
+        function toggleSaveStore() {
+            if (!currentUser) {
+                openLogin();
+                return;
+            }
+            if (!currentModalStore) return;
+
+            const idx = currentUser.savedStores.indexOf(currentModalStore);
+            if (idx >= 0) currentUser.savedStores.splice(idx, 1);
+            else currentUser.savedStores.push(currentModalStore);
+            saveUsersToStorage();
+
+            updateModalSaveIcon();
+            renderSavedStores();
+        }
+
+        /* =========================================================
+           11. 하단 네비게이션 (화면 전환)
+           ========================================================= */
+        function switchView(view) {
+            document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+            document.getElementById(view + "View").classList.add("active");
+            const navView = view === "restaurantList" ? "home" : view;
+            document.querySelectorAll(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.view === navView));
+            if (view === "myPage") {
+                currentProfileNickname = null;
+                renderMyPage();
+            } else if (view === "community") {
+                renderCommunityFeed();
+            }
+        }
+
+        /* =========================================================
+           12. 로그인 / 로그아웃
+           ========================================================= */
+        function updateHeaderAuth() {
+            document.getElementById("notifBellWrap").style.display = currentUser ? "inline-flex" : "none";
+            document.getElementById("headerAuthBtn").style.display = currentUser ? "none" : "block";
+            updateNotifBadge();
+        }
+
+        // 안 읽은(=아직 확인 안 한) 알림 개수를 종 아이콘 위 빨간 배지로 표시
+        function updateNotifBadge() {
+            const badge = document.getElementById("notifBadge");
+            const count = currentUser ? currentUser.notifications.length : 0;
+            if (count > 0) {
+                badge.textContent = count > 9 ? "9+" : String(count);
+                badge.style.display = "flex";
+            } else {
+                badge.style.display = "none";
+            }
+        }
+
+        function openLogin() {
+            document.getElementById("loginId").value = "";
+            document.getElementById("loginPassword").value = "";
+            document.getElementById("loginError").textContent = "";
+            document.getElementById("loginModal").style.display = "flex";
+        }
+
+        function closeLogin() {
+            document.getElementById("loginModal").style.display = "none";
+        }
+
+        function switchToSignup() {
+            closeLogin();
+            openSignup();
+        }
+
+        function doLogin() {
+            const id = document.getElementById("loginId").value.trim();
+            const pw = document.getElementById("loginPassword").value;
+            const user = mockUsers.find(u => u.username === id && u.password === pw);
+            if (!user) {
+                document.getElementById("loginError").textContent = "아이디 또는 비밀번호가 일치하지 않습니다.";
+                return;
+            }
+            currentUser = user;
+            // 발표/시연 때마다 반복 테스트할 수 있도록, 시드가 등록된 계정(jjinmatlog, test123)은
+            // 로그인할 때마다 그 계정 고유의 알림 세트로 새로 채워줍니다. 시드가 없는 계정은 그대로 둡니다.
+            const loginSeed = ACCOUNT_SEEDS[currentUser.username];
+            if (loginSeed) {
+                currentUser.notifications = loginSeed.notifications.slice();
+                saveUsersToStorage();
+            }
+            saveSession(user.username);
+            closeLogin();
+            updateHeaderAuth();
+            renderMyPage();
+            renderCityRestaurants();
+            renderCategoryGrid();
+            renderCommunityFeed();
+        }
+
+        // "친한 친구 추천" 필터는 로그인한 계정이 누구냐에 따라 결과가 달라지므로, 계정이 바뀔 때마다
+        // (로그인/로그아웃) 꺼둡니다. 켜둔 채로 다른 계정으로 넘어가면 그 계정이 누르지도 않은
+        // 필터가 자기도 모르게 켜진 채로 보이게 되기 때문입니다.
+        function doLogout() {
+            if (!confirm("로그아웃 하시겠습니까?")) return;
+            currentUser = null;
+            saveSession(null);
+            closeSettings();
+            updateHeaderAuth();
+            renderMyPage();
+            renderCityRestaurants();
+            renderCategoryGrid();
+            switchView("home");
+        }
+
+        /* =========================================================
+           13. 회원가입 (아이디/닉네임 중복확인, 이메일 인증)
+           ========================================================= */
+        function openSignup() {
+            ["suId", "suPassword", "suPassword2", "suNickname", "suEmail", "suEmailCode"].forEach(id => {
+                document.getElementById(id).value = "";
+            });
+            ["suIdHint", "suNicknameHint", "suEmailHint"].forEach(id => {
+                const el = document.getElementById(id);
+                el.textContent = "";
+                el.className = "field-hint";
+            });
+            document.getElementById("signupError").textContent = "";
+            document.getElementById("agreePrivacy").checked = false;
+            document.getElementById("agreeTos").checked = false;
+            document.getElementById("emailCodeRow").style.display = "none";
+            idChecked = false;
+            nicknameChecked = false;
+            emailVerified = false;
+            pendingEmailCode = null;
+            document.getElementById("signupModal").style.display = "flex";
+        }
+
+        function closeSignup() {
+            document.getElementById("signupModal").style.display = "none";
+        }
+
+        function resetIdCheck() {
+            idChecked = false;
+            const hint = document.getElementById("suIdHint");
+            hint.textContent = "";
+            hint.className = "field-hint";
+        }
+
+        function resetNicknameCheck() {
+            nicknameChecked = false;
+            const hint = document.getElementById("suNicknameHint");
+            hint.textContent = "";
+            hint.className = "field-hint";
+        }
+
+        function resetEmailVerify() {
+            emailVerified = false;
+            pendingEmailCode = null;
+            const hint = document.getElementById("suEmailHint");
+            hint.textContent = "";
+            hint.className = "field-hint";
+            document.getElementById("emailCodeRow").style.display = "none";
+        }
+
+        function checkIdDuplicate() {
+            const id = document.getElementById("suId").value.trim();
+            const hint = document.getElementById("suIdHint");
+            if (!/^[a-zA-Z0-9]{4,12}$/.test(id)) {
+                hint.textContent = "아이디는 영문/숫자 4~12자로 입력해주세요.";
+                hint.className = "field-hint error";
+                idChecked = false;
+                return;
+            }
+            if (mockUsers.some(u => u.username === id)) {
+                hint.textContent = "이미 사용 중인 아이디입니다.";
+                hint.className = "field-hint error";
+                idChecked = false;
+            } else {
+                hint.textContent = "사용 가능한 아이디입니다.";
+                hint.className = "field-hint ok";
+                idChecked = true;
+            }
+        }
+
+        function checkNicknameDuplicate() {
+            const nickname = document.getElementById("suNickname").value.trim();
+            const hint = document.getElementById("suNicknameHint");
+            if (!nickname) {
+                hint.textContent = "닉네임을 입력해주세요.";
+                hint.className = "field-hint error";
+                nicknameChecked = false;
+                return;
+            }
+            if (mockUsers.some(u => u.nickname === nickname)) {
+                hint.textContent = "이미 사용 중인 닉네임입니다.";
+                hint.className = "field-hint error";
+                nicknameChecked = false;
+            } else {
+                hint.textContent = "사용 가능한 닉네임입니다.";
+                hint.className = "field-hint ok";
+                nicknameChecked = true;
+            }
+        }
+
+        function sendEmailCode() {
+            const email = document.getElementById("suEmail").value.trim();
+            const hint = document.getElementById("suEmailHint");
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                hint.textContent = "올바른 이메일 형식을 입력해주세요.";
+                hint.className = "field-hint error";
+                return;
+            }
+            if (mockUsers.some(u => u.email === email)) {
+                hint.textContent = "이미 가입된 이메일입니다.";
+                hint.className = "field-hint error";
+                return;
+            }
+            pendingEmailCode = String(Math.floor(100000 + Math.random() * 900000));
+            document.getElementById("emailCodeRow").style.display = "flex";
+            hint.textContent = "인증번호를 발송했어요. 아래에 입력해주세요.";
+            hint.className = "field-hint";
+            alert(`(데모용) 인증번호가 발송되었습니다: ${pendingEmailCode}`);
+        }
+
+        function verifyEmailCode() {
+            const code = document.getElementById("suEmailCode").value.trim();
+            const hint = document.getElementById("suEmailHint");
+            if (!pendingEmailCode) {
+                hint.textContent = "먼저 인증번호를 발송해주세요.";
+                hint.className = "field-hint error";
+                return;
+            }
+            if (code === pendingEmailCode) {
+                hint.textContent = "이메일 인증이 완료되었습니다.";
+                hint.className = "field-hint ok";
+                emailVerified = true;
+            } else {
+                hint.textContent = "인증번호가 일치하지 않습니다.";
+                hint.className = "field-hint error";
+                emailVerified = false;
+            }
+        }
+
+        function submitSignup() {
+            const errorEl = document.getElementById("signupError");
+            const id = document.getElementById("suId").value.trim();
+            const pw = document.getElementById("suPassword").value;
+            const pw2 = document.getElementById("suPassword2").value;
+            const nickname = document.getElementById("suNickname").value.trim();
+            const email = document.getElementById("suEmail").value.trim();
+
+            if (!idChecked) { errorEl.textContent = "아이디 중복확인을 완료해주세요."; return; }
+            if (pw.length < 6) { errorEl.textContent = "비밀번호는 6자 이상이어야 합니다."; return; }
+            if (pw !== pw2) { errorEl.textContent = "비밀번호가 일치하지 않습니다."; return; }
+            if (!nicknameChecked) { errorEl.textContent = "닉네임 중복확인을 완료해주세요."; return; }
+            if (!emailVerified) { errorEl.textContent = "이메일 인증을 완료해주세요."; return; }
+            if (!document.getElementById("agreePrivacy").checked || !document.getElementById("agreeTos").checked) {
+                errorEl.textContent = "필수 약관에 모두 동의해주세요.";
+                return;
+            }
+            errorEl.textContent = "";
+
+            mockUsers.push({
+                id: "u" + (mockUsers.length + 1),
+                username: id,
+                password: pw,
+                nickname: nickname,
+                email: email,
+                allergies: [],
+                likeCategories: [],
+                dislikeCategories: [],
+                followingList: [],
+                followerList: [],
+                avgRating: 0,
+                friends: [],
+                savedStores: [],
+                notifications: [],
+                myReviews: [],
+                badgeIds: []
+            });
+            saveUsersToStorage();
+
+            closeSignup();
+            alert("회원가입이 완료되었습니다. 방금 만든 아이디와 비밀번호로 로그인해주세요.");
+            openLogin();
+        }
+
+        /* =========================================================
+           14. 마이페이지 렌더 (로그인 상태 반영)
+           ========================================================= */
+        function renderMyPage() {
+            const prompt = document.getElementById("myPageLoginPrompt");
+            const content = document.getElementById("myPageContent");
+            if (!currentUser) {
+                prompt.style.display = "flex";
+                content.style.display = "none";
+                return;
+            }
+            prompt.style.display = "none";
+            content.style.display = "block";
+            document.getElementById("mpNickname").textContent = currentUser.nickname;
+            document.getElementById("mpFollowerCount").textContent = `팔로워 ${currentUser.followerList.length}`;
+            document.getElementById("mpFollowingCount").textContent = `팔로잉 ${currentUser.followingList.length}`;
+            document.getElementById("mpPref").textContent =
+                `자주가는 카테고리: ${currentUser.likeCategories.join(", ") || "아직 없어요"} · 평균 ★${currentUser.avgRating.toFixed(1)}`;
+            renderBadges();
+            renderSavedStores();
+            renderMyReviews();
+        }
+
+        function renderSavedStores() {
+            const container = document.getElementById("savedStoreList");
+            const entries = currentUser.savedStores
+                .map(name => [name, storeDB[name]])
+                .filter(([, s]) => s);
+            if (entries.length === 0) {
+                container.innerHTML = `<div class="empty-state">아직 찜한 맛집이 없어요</div>`;
+                return;
+            }
+            // "최근에 쓴 리뷰"와 동일하게 각 가게를 흰색 박스(review-card)로 구분해서 보여줌
+            container.innerHTML = entries.map(([name, s]) => {
+                let prefTag = "";
+                if (currentUser.likeCategories.includes(s.category)) {
+                    prefTag = `<span class="pref-tag pref-like"><i class="fa-solid fa-heart"></i> 취향저격</span>`;
+                } else if (currentUser.dislikeCategories.includes(s.category)) {
+                    prefTag = `<span class="pref-tag pref-dislike">비선호 장르</span>`;
+                }
+                return `
+                    <div class="review-card" onclick="openStoreDetail('${name}')">
+                        <div class="feed-card-top">
+                            <div>
+                                <div class="feed-card-author">${name}${prefTag}</div>
+                                <div class="feed-card-store">${s.category} · 대표메뉴: ${s.menu.name}</div>
+                            </div>
+                            <div class="feed-card-rating">★ ${s.rating.toFixed(1)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderBadges() {
+            const container = document.getElementById("badgeRow");
+            if (currentUser.badgeIds.length === 0) {
+                container.innerHTML = `<div class="empty-state" style="padding:8px 0;">아직 획득한 인증마크가 없어요</div>`;
+                return;
+            }
+            container.innerHTML = currentUser.badgeIds.map(id => {
+                const b = badgeDB[id];
+                return `
+                    <div class="badge-item" onclick="openBadgeDetail('${id}')">
+                        <div class="badge-circle"><i class="fa-solid ${b.icon}"></i></div>
+                        <span>${b.name}</span>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        /* =========================================================
+           15. 환경설정 (리스트 메뉴 + 서브페이지)
+           ========================================================= */
+        function openSettings() {
+            if (!currentUser) return;
+            document.getElementById("settingsModal").style.display = "flex";
+        }
+
+        function closeSettings() {
+            document.getElementById("settingsModal").style.display = "none";
+        }
+
+        function openSubpage(id) {
+            document.getElementById(id).style.display = "flex";
+        }
+
+        function closeSubpage(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        function renderChipSelect(containerId, options, selected, excludeList) {
+            document.getElementById(containerId).innerHTML = options.map(opt => {
+                const isSelected = selected.includes(opt);
+                const isExcluded = excludeList && excludeList.includes(opt) && !isSelected;
+                return `<div class="chip-option${isSelected ? " selected" : ""}${isExcluded ? " disabled" : ""}" data-value="${opt}" onclick="toggleChip(this)">${opt}</div>`;
+            }).join("");
+        }
+
+        function toggleChip(el) {
+            const container = el.parentElement;
+            if (el.dataset.value === "해당없음") {
+                container.querySelectorAll(".chip-option").forEach(c => c.classList.remove("selected"));
+                el.classList.add("selected");
+                return;
+            }
+            const noneChip = container.querySelector('.chip-option[data-value="해당없음"]');
+            if (noneChip) noneChip.classList.remove("selected");
+            el.classList.toggle("selected");
+        }
+
+        function getSelectedChips(containerId) {
+            return Array.from(document.querySelectorAll(`#${containerId} .chip-option.selected`)).map(el => el.dataset.value);
+        }
+
+        /* 개인정보 수정 */
+        let peNicknameChecked = true; // 닉네임을 바꾸지 않았다면 중복확인이 필요 없으므로 기본 true
+
+        function openProfileEditPage() {
+            document.getElementById("peNickname").value = currentUser.nickname;
+            document.getElementById("peUsername").value = currentUser.username;
+            document.getElementById("pePassword").value = "";
+            document.getElementById("pePassword2").value = "";
+            document.getElementById("peError").textContent = "";
+            document.getElementById("peNicknameHint").textContent = "";
+            document.getElementById("peNicknameHint").className = "field-hint";
+            peNicknameChecked = true;
+            openSubpage("profileEditPage");
+        }
+
+        function resetPeNicknameCheck() {
+            const hint = document.getElementById("peNicknameHint");
+            const nickname = document.getElementById("peNickname").value.trim();
+            if (nickname === currentUser.nickname) {
+                // 원래 닉네임 그대로면 중복확인 없이도 저장 가능
+                peNicknameChecked = true;
+                hint.textContent = "";
+                hint.className = "field-hint";
+            } else {
+                peNicknameChecked = false;
+                hint.textContent = "";
+                hint.className = "field-hint";
+            }
+        }
+
+        function checkPeNicknameDuplicate() {
+            const nickname = document.getElementById("peNickname").value.trim();
+            const hint = document.getElementById("peNicknameHint");
+            if (!nickname) {
+                hint.textContent = "닉네임을 입력해주세요.";
+                hint.className = "field-hint error";
+                peNicknameChecked = false;
+                return;
+            }
+            if (nickname !== currentUser.nickname && mockUsers.some(u => u.nickname === nickname && u !== currentUser)) {
+                hint.textContent = "이미 사용 중인 닉네임입니다.";
+                hint.className = "field-hint error";
+                peNicknameChecked = false;
+            } else {
+                hint.textContent = "사용 가능한 닉네임입니다.";
+                hint.className = "field-hint ok";
+                peNicknameChecked = true;
+            }
+        }
+
+        function saveProfileEdit() {
+            const errorEl = document.getElementById("peError");
+            const nickname = document.getElementById("peNickname").value.trim();
+            const username = document.getElementById("peUsername").value.trim();
+            const pw = document.getElementById("pePassword").value;
+            const pw2 = document.getElementById("pePassword2").value;
+
+            if (!nickname) { errorEl.textContent = "닉네임을 입력해주세요."; return; }
+            if (!username) { errorEl.textContent = "아이디를 입력해주세요."; return; }
+            if (!peNicknameChecked) { errorEl.textContent = "닉네임 중복확인을 완료해주세요."; return; }
+            if (mockUsers.some(u => u.username === username && u !== currentUser)) {
+                errorEl.textContent = "이미 사용 중인 아이디입니다.";
+                return;
+            }
+            if (mockUsers.some(u => u.nickname === nickname && u !== currentUser)) {
+                errorEl.textContent = "이미 사용 중인 닉네임입니다.";
+                return;
+            }
+            if (pw || pw2) {
+                if (pw.length < 6) { errorEl.textContent = "비밀번호는 6자 이상이어야 합니다."; return; }
+                if (pw !== pw2) { errorEl.textContent = "비밀번호가 일치하지 않습니다."; return; }
+                currentUser.password = pw;
+            }
+
+            currentUser.nickname = nickname;
+            currentUser.username = username;
+            errorEl.textContent = "";
+            saveUsersToStorage();
+            saveSession(currentUser.username);
+            renderMyPage();
+            closeSubpage("profileEditPage");
+            alert("개인정보가 저장되었습니다.");
+        }
+
+        /* 알레르기 설정 */
+        function openAllergyPage() {
+            renderChipSelect("setAllergyChips", ALLERGY_OPTIONS, currentUser.allergies);
+            openSubpage("allergyPage");
+        }
+
+        function saveAllergySettings() {
+            currentUser.allergies = getSelectedChips("setAllergyChips").filter(v => v !== "해당없음");
+            saveUsersToStorage();
+            closeSubpage("allergyPage");
+            alert("알레르기 정보가 저장되었습니다.");
+        }
+
+        /* 선호 / 비선호 음식 설정 */
+        function openPreferencePage() {
+            renderChipSelect("setLikeChips", FOOD_CATEGORIES, currentUser.likeCategories);
+            renderChipSelect("setDislikeChips", FOOD_CATEGORIES, currentUser.dislikeCategories, currentUser.likeCategories);
+            openSubpage("preferencePage");
+        }
+
+        function savePreferenceSettings() {
+            currentUser.likeCategories = getSelectedChips("setLikeChips");
+            currentUser.dislikeCategories = getSelectedChips("setDislikeChips").filter(v => !currentUser.likeCategories.includes(v));
+            saveUsersToStorage();
+            renderMyPage();
+            renderCityRestaurants();
+            renderCategoryGrid();
+            closeSubpage("preferencePage");
+            alert("선호/비선호 음식이 저장되었습니다.");
+        }
+
+        /* 리뷰 관리 */
+        function openReviewManagePage() {
+            renderManageReviews();
+            openSubpage("reviewManagePage");
+        }
+
+        function renderManageReviews() {
+            const container = document.getElementById("manageReviewList");
+            if (currentUser.myReviews.length === 0) {
+                container.innerHTML = `<div class="empty-state">작성한 리뷰가 없어요</div>`;
+                return;
+            }
+            container.innerHTML = currentUser.myReviews.map((item, idx) => {
+                const store = storeDB[item.store];
+                const review = store.reviews.find(r => r.id === item.reviewId);
+                return `
+                    <div class="review-card" style="cursor:default;">
+                        <div class="feed-card-top">
+                            <div>
+                                <div class="feed-card-author">${item.store}</div>
+                                <div class="feed-card-store">★ ${review.rating}</div>
+                            </div>
+                        </div>
+                        <p class="feed-card-text">${review.text}</p>
+                        <div style="display:flex;gap:8px;margin-top:4px;">
+                            <button class="btn-check" onclick="editManageReview(${idx})">수정</button>
+                            <button class="btn-check" style="color:#e03131;" onclick="deleteManageReview(${idx})">삭제</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function editManageReview(idx) {
+            const item = currentUser.myReviews[idx];
+            const store = storeDB[item.store];
+            const review = store.reviews.find(r => r.id === item.reviewId);
+            const newText = prompt("리뷰 내용을 수정하세요.", review.text);
+            if (newText === null || !newText.trim()) return;
+            if (!confirm("수정한 내용으로 저장하시겠습니까?")) return;
+            review.text = newText.trim();
+            saveUsersToStorage();
+            renderManageReviews();
+            renderMyReviews();
+            renderCommunityFeed();
+        }
+
+        function deleteManageReview(idx) {
+            if (!confirm("이 리뷰를 삭제하시겠어요?")) return;
+            currentUser.myReviews.splice(idx, 1);
+            saveUsersToStorage();
+            renderManageReviews();
+            renderMyReviews();
+        }
+
+        /* 친한 친구 관리 */
+        function openFriendPage() {
+            renderFriendList();
+            openSubpage("friendPage");
+        }
+
+        function renderFriendList() {
+            const container = document.getElementById("friendList");
+            if (!currentUser.friends || currentUser.friends.length === 0) {
+                container.innerHTML = `<div class="empty-state" style="padding:12px 0;">등록된 친한 친구가 없어요</div>`;
+                return;
+            }
+            container.innerHTML = currentUser.friends.map(name => `
+                <div class="friend-card">
+                    <div class="friend-card-left" onclick="closeSubpage('friendPage'); openUserProfile('${name}')">
+                        <div class="friend-card-photo"><i class="fa-solid fa-user"></i></div>
+                        <span class="friend-card-name">${name}</span>
+                    </div>
+                    <button class="friend-card-remove" onclick="removeFriend('${name}')">삭제</button>
+                </div>
+            `).join("");
+        }
+
+        function removeFriend(name) {
+            currentUser.friends = currentUser.friends.filter(f => f !== name);
+            saveUsersToStorage();
+            renderFriendList();
+        }
+
+        /* =========================================================
+           16. 인증마크 상세
+           ========================================================= */
+        function openBadgeDetail(id) {
+            const b = badgeDB[id];
+            document.getElementById("badgeDetailIcon").innerHTML = `<i class="fa-solid ${b.icon}"></i>`;
+            document.getElementById("badgeDetailName").textContent = b.name;
+            document.getElementById("badgeDetailDesc").textContent = b.desc;
+            document.getElementById("badgeDetailCondition").textContent = b.condition;
+            document.getElementById("badgeDetailProgress").textContent = b.progress;
+            document.getElementById("badgeDetailDate").textContent = b.earnedAt;
+            document.getElementById("badgeDetailModal").style.display = "flex";
+        }
+
+        function closeBadgeDetail() {
+            document.getElementById("badgeDetailModal").style.display = "none";
+        }
+
+        /* =========================================================
+           17. 알림
+           ========================================================= */
+        function openNotifications() {
+            if (!currentUser) return;
+            const container = document.getElementById("notifList");
+            if (currentUser.notifications.length === 0) {
+                container.innerHTML = `<div class="empty-state">새 알림이 없어요</div>`;
+            } else {
+                container.innerHTML = currentUser.notifications.map(n => `
+                    <div class="notif-item" onclick="handleNotificationClick('${n.id}')">
+                        <div>${n.text}</div>
+                        <div class="notif-time">${n.time}</div>
+                    </div>
+                `).join("");
+            }
+            document.getElementById("notifModal").style.display = "flex";
+        }
+
+        function closeNotifications() {
+            document.getElementById("notifModal").style.display = "none";
+        }
+
+        // 알림을 누르면 종류에 맞는 곳으로 이동시키고, 확인한 알림은 목록에서 제거함
+        function handleNotificationClick(id) {
+            const idx = currentUser.notifications.findIndex(n => n.id === id);
+            if (idx < 0) return;
+            const n = currentUser.notifications[idx];
+            currentUser.notifications.splice(idx, 1);
+            saveUsersToStorage();
+            updateNotifBadge();
+            closeNotifications();
+
+            if (n.type === "like") {
+                const store = storeDB[n.storeName];
+                const review = store && store.reviews.find(r => r.id === n.reviewId);
+                if (review) review.likes = (review.likes || 0) + 1;
+                openStoreDetail(n.storeName, n.reviewId);
+            } else if (n.type === "friendReview") {
+                openStoreDetail(n.storeName, n.reviewId);
+            } else if (n.type === "newFollower") {
+                // 팔로우 관계(내 팔로워 목록 + 상대방 프로필의 팔로잉 목록)는 이미 로그인 시점에
+                // 알림과 함께 동시에 세팅되어 있습니다. 알림을 누르는 건 그 사실을 확인하러
+                // 상대방 프로필로 "이동"하는 것일 뿐, 관계를 새로 만드는 게 아닙니다.
+                // 혹시라도 어긋나 있는 경우를 대비한 안전장치로만 한 번 더 맞춰줍니다.
+                if (!currentUser.followerList.includes(n.nickname)) {
+                    currentUser.followerList.push(n.nickname);
+                    saveUsersToStorage();
+                }
+                if (otherUsers[n.nickname] && !otherUsers[n.nickname].followingNames.includes(currentUser.nickname)) {
+                    otherUsers[n.nickname].followingNames.push(currentUser.nickname);
+                    saveOtherUsersFollowState();
+                }
+                openUserProfile(n.nickname);
+            } else if (n.storeName) {
+                openStoreDetail(n.storeName);
+            }
+        }
+
+        /* =========================================================
+           18. 다른 유저 프로필 / 팔로우 / 팔로워·팔로잉 목록 / 친한친구
+           ========================================================= */
+        function openUserProfile(nickname) {
+            if (currentUser && nickname === currentUser.nickname) {
+                switchView("myPage");
+                return;
+            }
+            const person = otherUsers[nickname];
+            if (!person) {
+                alert("프로필 정보를 찾을 수 없어요.");
+                return;
+            }
+            currentProfileNickname = nickname;
+            renderUserProfilePage(nickname);
+            document.getElementById("userProfileModal").style.display = "flex";
+        }
+
+        function closeUserProfile() {
+            document.getElementById("userProfileModal").style.display = "none";
+            currentProfileNickname = null;
+        }
+
+        function renderUserProfilePage(nickname) {
+            const person = otherUsers[nickname];
+            if (!person) return;
+
+            document.getElementById("upNickname").textContent = nickname;
+            document.getElementById("upFollowerCount").textContent = `팔로워 ${person.followerNames.length}`;
+            document.getElementById("upFollowingCount").textContent = `팔로잉 ${person.followingNames.length}`;
+            document.getElementById("upLikeCategories").textContent =
+                `선호 음식: ${person.likeCategories.join(", ") || "정보 없음"}`;
+
+            const isFollowing = currentUser && currentUser.followingList.includes(nickname);
+            const followBtn = document.getElementById("upFollowBtn");
+            followBtn.textContent = isFollowing ? "팔로잉" : "팔로우";
+            followBtn.classList.toggle("following", isFollowing);
+
+            const isCloseFriend = currentUser && currentUser.friends.includes(nickname);
+            document.getElementById("upCloseFriendBadge").style.display = isCloseFriend ? "inline-flex" : "none";
+
+            document.getElementById("upBadgeRow").innerHTML = (person.badges || []).map(id => {
+                const b = badgeDB[id];
+                return `
+                    <div class="badge-item" onclick="openBadgeDetail('${id}')">
+                        <div class="badge-circle"><i class="fa-solid ${b.icon}"></i></div>
+                        <span>${b.name}</span>
+                    </div>
+                `;
+            }).join("") || `<div class="empty-state" style="padding:8px 0;">아직 없어요</div>`;
+
+            const reviews = getReviewsByAuthor(nickname);
+            const reviewContainer = document.getElementById("upReviewList");
+            if (reviews.length === 0) {
+                reviewContainer.innerHTML = `<div class="empty-state">작성한 리뷰가 없어요</div>`;
+            } else {
+                reviewContainer.innerHTML = reviews.map(r => `
+                    <div class="review-card" onclick="closeUserProfile(); openStoreDetail('${r.storeName}', '${r.id}')">
+                        <div class="feed-card-top">
+                            <div class="feed-card-store">${r.storeName}</div>
+                            <div class="feed-card-rating">★ ${r.rating.toFixed(1)}</div>
+                        </div>
+                        <div class="feed-card-text">${r.text}</div>
+                    </div>
+                `).join("");
+            }
+        }
+
+        function toggleFollow(nickname) {
+            if (!currentUser) {
+                openLogin();
+                return;
+            }
+            if (!nickname || nickname === currentUser.nickname) return;
+
+            const other = otherUsers[nickname];
+            const idx = currentUser.followingList.indexOf(nickname);
+            if (idx >= 0) {
+                currentUser.followingList.splice(idx, 1);
+                currentUser.friends = currentUser.friends.filter(f => f !== nickname);
+                if (other) other.followerNames = other.followerNames.filter(n => n !== currentUser.nickname);
+            } else {
+                currentUser.followingList.push(nickname);
+                if (other && !other.followerNames.includes(currentUser.nickname)) {
+                    other.followerNames.push(currentUser.nickname);
+                }
+            }
+            saveUsersToStorage();
+            saveOtherUsersFollowState();
+
+            renderMyPage();
+            renderCommunityFeed();
+            if (currentProfileNickname === nickname) renderUserProfilePage(nickname);
+            if (document.getElementById("followListModal").style.display === "flex" && lastFollowListType) {
+                openFollowListModal(lastFollowListType);
+            }
+        }
+
+        function openFollowListModal(type) {
+            lastFollowListType = type;
+            const isMine = !currentProfileNickname;
+            const person = isMine ? currentUser : otherUsers[currentProfileNickname];
+            if (!person) return;
+
+            const list = type === "followers"
+                ? (isMine ? person.followerList : person.followerNames)
+                : (isMine ? person.followingList : person.followingNames);
+
+            document.getElementById("followListTitle").textContent = type === "followers" ? "팔로워" : "팔로잉";
+            renderFollowListContent(list || []);
+            document.getElementById("followListModal").style.display = "flex";
+        }
+
+        function closeFollowList() {
+            document.getElementById("followListModal").style.display = "none";
+        }
+
+        function renderFollowListContent(list) {
+            const container = document.getElementById("followListContent");
+            if (!list || list.length === 0) {
+                container.innerHTML = `<div class="empty-state">아직 없어요</div>`;
+                return;
+            }
+            container.innerHTML = list.map(name => {
+                if (currentUser && name === currentUser.nickname) {
+                    return `
+                        <div class="friend-card">
+                            <div class="friend-card-left">
+                                <div class="friend-card-photo"><i class="fa-solid fa-user"></i></div>
+                                <div class="friend-card-info">
+                                    <div class="friend-card-name">${name} <span class="friend-card-me-tag">(나)</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                const isFollowing = currentUser && currentUser.followingList.includes(name);
+                const isCloseFriend = currentUser && currentUser.friends.includes(name);
+                return `
+                    <div class="friend-card">
+                        <div class="friend-card-left" onclick="closeFollowList(); openUserProfile('${name}')">
+                            <div class="friend-card-photo"><i class="fa-solid fa-user"></i></div>
+                            <div class="friend-card-info">
+                                <div class="friend-card-name">${name}</div>
+                                ${isCloseFriend ? '<div class="close-friend-tag"><i class="fa-solid fa-star"></i> 친한친구</div>' : ""}
+                            </div>
+                        </div>
+                        <button class="friend-card-follow-btn${isFollowing ? " following" : ""}" onclick="toggleFollow('${name}')">${isFollowing ? "팔로잉" : "팔로우"}</button>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function openUserActionModal() {
+            const nickname = currentProfileNickname;
+            if (!nickname || !currentUser) return;
+
+            document.getElementById("userActionNickname").textContent = nickname;
+            const isFollowing = currentUser.followingList.includes(nickname);
+            const isCloseFriend = currentUser.friends.includes(nickname);
+
+            let buttons = "";
+            if (isFollowing) {
+                buttons += `
+                    <button class="settings-nav-btn" onclick="toggleFollow('${nickname}'); closeUserActionModal();">
+                        <span>팔로우 취소</span><i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                    <button class="settings-nav-btn" onclick="toggleCloseFriendFromAction('${nickname}')">
+                        <span>${isCloseFriend ? "친한친구 삭제" : "친한친구 추가"}</span><i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                `;
+            }
+            buttons += `
+                <button class="settings-nav-btn" onclick="closeUserActionModal(); document.getElementById('upReviewList').scrollIntoView({block:'start'});">
+                    <span>작성한 리뷰</span><i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <button class="settings-nav-btn" style="color:#e03131;" onclick="reportUser('${nickname}')">
+                    <span>신고</span><i class="fa-solid fa-flag"></i>
+                </button>
+            `;
+
+            document.getElementById("userActionList").innerHTML = buttons;
+            document.getElementById("userActionModal").style.display = "flex";
+        }
+
+        function closeUserActionModal() {
+            document.getElementById("userActionModal").style.display = "none";
+        }
+
+        function toggleCloseFriendFromAction(nickname) {
+            toggleCloseFriend(nickname);
+            openUserActionModal();
+        }
+
+        function toggleCloseFriend(nickname) {
+            if (!currentUser.followingList.includes(nickname)) {
+                alert("먼저 팔로우해야 친한 친구로 추가할 수 있어요.");
+                return;
+            }
+            const idx = currentUser.friends.indexOf(nickname);
+            if (idx >= 0) {
+                currentUser.friends.splice(idx, 1);
+            } else {
+                currentUser.friends.push(nickname);
+            }
+            saveUsersToStorage();
+            renderMyPage();
+            renderCommunityFeed();
+            if (currentProfileNickname === nickname) renderUserProfilePage(nickname);
+        }
+
+        function reportUser(nickname) {
+            closeUserActionModal();
+            if (confirm(`${nickname}님을 신고하시겠어요?`)) {
+                alert("신고가 접수되었습니다. 검토 후 조치할게요.");
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

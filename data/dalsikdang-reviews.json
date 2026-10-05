@@ -2,7 +2,8 @@
   "restaurant": {
     "name": "달식당",
     "kakaoPlaceId": "1221530357",
-    "url": "https://place.map.kakao.com/1221530357#review"
+    "url": "https://place.map.kakao.com/1221530357#review",
+    "kakaoRating": 4.5
   },
   "reviews": [
     {

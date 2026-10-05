@@ -2,7 +2,8 @@
   "restaurant": {
     "name": "고바우순두부쌈장 천안본점",
     "kakaoPlaceId": "574471413",
-    "url": "https://place.map.kakao.com/574471413#review"
+    "url": "https://place.map.kakao.com/574471413#review",
+    "kakaoRating": 3.4
   },
   "reviews": [
     {

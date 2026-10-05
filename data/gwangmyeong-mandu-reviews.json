@@ -2,7 +2,8 @@
   "restaurant": {
     "name": "광명만두",
     "kakaoPlaceId": "15426301",
-    "url": "https://place.map.kakao.com/15426301#review"
+    "url": "https://place.map.kakao.com/15426301#review",
+    "kakaoRating": 4.1
   },
   "reviews": [
     {

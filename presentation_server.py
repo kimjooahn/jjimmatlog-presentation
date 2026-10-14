@@ -1,7 +1,8 @@
-"""Local presentation server for the restaurant review scoring demo."""
+"""Presentation server for the restaurant review scoring demo."""
 from __future__ import annotations
 
 import json
+import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -134,9 +135,9 @@ class PresentationHandler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
-    server = ThreadingHTTPServer(("127.0.0.1", port), PresentationHandler)
-    print(f"찐맛로그 발표 서버: http://127.0.0.1:{port}", flush=True)
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else int(os.environ.get("PORT", "8765"))
+    server = ThreadingHTTPServer(("0.0.0.0", port), PresentationHandler)
+    print(f"찐맛로그 발표 서버 listening on port {port}", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
